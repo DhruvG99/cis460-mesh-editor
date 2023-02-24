@@ -1,5 +1,5 @@
 #include <mainwindow.h>
-
+#include <vertex.h>
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <QDebug>

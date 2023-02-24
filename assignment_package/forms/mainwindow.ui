@@ -17,8 +17,8 @@
    <widget class="MyGL" name="mygl">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>11</y>
+      <x>10</x>
+      <y>-60</y>
       <width>618</width>
       <height>432</height>
      </rect>
@@ -311,6 +311,19 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>970</x>
+      <y>350</y>
+      <width>80</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load OBJ</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -318,7 +331,7 @@
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>21</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -347,6 +360,11 @@
   <action name="actionCamera_Controls">
    <property name="text">
     <string>Camera Controls</string>
+   </property>
+  </action>
+  <action name="actionLoad_OBJ">
+   <property name="text">
+    <string>Load OBJ</string>
    </property>
   </action>
  </widget>

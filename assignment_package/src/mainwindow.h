@@ -18,6 +18,8 @@ public:
     ~MainWindow();
 
 private slots:
+    void on_pushButtonObj();
+
     void on_actionQuit_triggered();
 
     void on_actionCamera_Controls_triggered();
