@@ -1,5 +1,7 @@
 #include "halfedge.h"
 
+static int count = 0;
+
 HalfEdge::HalfEdge()
 {
     idx = count;

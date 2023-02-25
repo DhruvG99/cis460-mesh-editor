@@ -9,6 +9,7 @@
 
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
+#include <mesh.h>
 
 
 class MyGL
@@ -25,7 +26,6 @@ private:
 
     Camera m_glCamera;
 
-
 public:
     explicit MyGL(QWidget *parent = nullptr);
     ~MyGL();
@@ -34,8 +34,11 @@ public:
     void resizeGL(int w, int h);
     void paintGL();
 
+    Mesh m_mesh;
 protected:
     void keyPressEvent(QKeyEvent *e);
+
+
 };
 
 

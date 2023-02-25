@@ -5,6 +5,18 @@
 #include <vertex.h>
 #include <halfedge.h>
 #include <drawable.h>
+#include <openglcontext.h>
+
+struct comp
+{
+    template<typename T>
+    bool operator()(const T &l, const T &r) const
+    {
+        if(glm::all(glm::lessThan(l.first,r.first)))
+            return true;
+        return false;
+    }
+};
 
 class Mesh
         : public Drawable
@@ -14,13 +26,14 @@ public:
     std::vector<uPtr<Face>> faceCollection;
     std::vector<uPtr<HalfEdge>> halfedgeCollection;
     std::vector<uPtr<Vertex>> vertexCollection;
-    std::map<std::pair<glm::vec3 , glm::vec3>, HalfEdge*> edgeBounds;
-    Mesh();
-    ~Mesh();
+    std::map<std::pair<glm::vec4 , glm::vec4>, HalfEdge*, comp> edgeBounds;
 
+    Mesh(OpenGLContext*);
+    ~Mesh();
+    void testMesh();
     void create() override;
 
-//    GLenum drawMode() override;
+    GLenum drawMode() override;
 };
 
 #endif // MESH_H

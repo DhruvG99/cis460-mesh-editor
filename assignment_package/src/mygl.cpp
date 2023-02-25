@@ -10,7 +10,8 @@ MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
       m_geomSquare(this),
       m_progLambert(this), m_progFlat(this),
-      m_glCamera()
+      m_glCamera(),
+      m_mesh(this)
 {
     setFocusPolicy(Qt::StrongFocus);
 }
@@ -79,8 +80,10 @@ void MyGL::resizeGL(int w, int h)
 //For example, when the function update() is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
+
     // Clear the screen so that we only see newly drawn images
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
     m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
     m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());

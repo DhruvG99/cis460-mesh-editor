@@ -13,7 +13,6 @@ private:
     HalfEdge* halfedge;
     glm::vec3 color;
     int idx;
-    static int count;
 public:
     Face();
     Face(HalfEdge*, glm::vec3);

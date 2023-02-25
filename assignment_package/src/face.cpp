@@ -1,5 +1,7 @@
 #include "face.h"
 
+static int count = 0;
+
 Face::Face()
 {
     idx = count;

@@ -17,7 +17,7 @@ private:
     //vertex between current and nextEdge
     Vertex* vert;
     int idx;
-    static int count;
+
 public:
     HalfEdge();
     HalfEdge(Vertex* v);

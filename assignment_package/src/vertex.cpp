@@ -1,4 +1,5 @@
 #include "vertex.h"
+static int count = 0;
 
 Vertex::Vertex()
 {
@@ -6,14 +7,14 @@ Vertex::Vertex()
     count += 1;
 }
 
-Vertex::Vertex(glm::vec3 v)
+Vertex::Vertex(glm::vec4 v)
     :pos(v)
 {
     idx = count;
     count += 1;
 }
 
-Vertex::Vertex(glm::vec3 v, HalfEdge* e)
+Vertex::Vertex(glm::vec4 v, HalfEdge* e)
     : pos(v), halfedge(e)
 {
     idx = count;
