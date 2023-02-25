@@ -142,7 +142,6 @@ void ShaderProgram::draw(Drawable &d)
         );
     }
     useMe();
-
     // Each of the following blocks checks that:
     //   * This shader has this attribute, and
     //   * This Drawable has a vertex buffer for this attribute.
@@ -156,17 +155,14 @@ void ShaderProgram::draw(Drawable &d)
         context->glEnableVertexAttribArray(attrPos);
         context->glVertexAttribPointer(attrPos, 4, GL_FLOAT, false, 0, nullptr);
     }
-
     if (attrNor != -1 && d.bindNor()) {
         context->glEnableVertexAttribArray(attrNor);
         context->glVertexAttribPointer(attrNor, 4, GL_FLOAT, false, 0, nullptr);
     }
-
     if (attrCol != -1 && d.bindCol()) {
         context->glEnableVertexAttribArray(attrCol);
         context->glVertexAttribPointer(attrCol, 4, GL_FLOAT, false, 0, nullptr);
     }
-
     // Bind the index buffer and then draw shapes from it.
     // This invokes the shader program, which accesses the vertex buffers.
     d.bindIdx();

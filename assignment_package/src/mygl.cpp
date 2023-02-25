@@ -80,11 +80,8 @@ void MyGL::resizeGL(int w, int h)
 //For example, when the function update() is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
-
     // Clear the screen so that we only see newly drawn images
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
     m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
     m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
     m_progLambert.setCamPos(m_glCamera.eye);
@@ -105,6 +102,20 @@ void MyGL::paintGL()
     model = glm::translate(glm::mat4(1.0f), glm::vec3(2,2,0)) * glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0,0,1));
     m_progLambert.setModelMatrix(model);
     m_progLambert.draw(m_geomSquare);
+}
+
+void MyGL::renderMesh()
+{
+    // Clear the screen so that we only see newly drawn images
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
+//    m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
+//    m_progLambert.setCamPos(m_glCamera.eye);
+    m_progFlat.setModelMatrix(glm::mat4(1.f));
+    //Draw the example sphere using our lambert shader
+    std::cout<<"Mesh: "<<std::endl;
+    m_progFlat.draw(m_mesh);
 }
 
 

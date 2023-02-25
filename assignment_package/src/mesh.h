@@ -31,7 +31,7 @@ public:
     Mesh(OpenGLContext*);
     ~Mesh();
     void testMesh();
-    void create() override;
+    virtual void create() override;
 
     GLenum drawMode() override;
 };

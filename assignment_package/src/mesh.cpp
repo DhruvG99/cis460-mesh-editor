@@ -71,21 +71,27 @@ void Mesh::create()
 
     //comments for my own understanding
     generateIdx();
-    //binds bufPos to this VBO
+    //binds handle bufPos to this VBO
     mp_context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
+    //fills in the data
     mp_context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, idx.size() * sizeof(GLuint), idx.data(), GL_STATIC_DRAW);
 
     generatePos();
+    //same thing as above, but with arrays, for position
     mp_context->glBindBuffer(GL_ARRAY_BUFFER, bufPos);
     mp_context->glBufferData(GL_ARRAY_BUFFER, pos.size() * sizeof(glm::vec4), pos.data(), GL_STATIC_DRAW);
-
 //    generateNor();
 //    mp_context->glBindBuffer(GL_ARRAY_BUFFER, bufNor);
 //    mp_context->glBufferData(GL_ARRAY_BUFFER, nor.size() * sizeof(glm::vec4), nor.data(), GL_STATIC_DRAW);
 
-//    //random color. or leave black
-//    generateCol();
-//    mp_context->glBindBuffer(GL_ARRAY_BUFFER, bufCol);
-//    mp_context->glBufferData(GL_ARRAY_BUFFER, col.size() * sizeof(glm::vec4), col.data(), GL_STATIC_DRAW);
+    std::vector<glm::vec4> col {glm::vec4(1, 0, 0, 1),
+                                 glm::vec4(0, 1, 0, 1),
+                                 glm::vec4(0, 0, 1, 1),
+                                 glm::vec4(1, 1, 0, 1)};
+
+    //random color. or leave black
+    generateCol();
+    mp_context->glBindBuffer(GL_ARRAY_BUFFER, bufCol);
+    mp_context->glBufferData(GL_ARRAY_BUFFER, col.size() * sizeof(glm::vec4), col.data(), GL_STATIC_DRAW);
 }
 

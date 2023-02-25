@@ -145,7 +145,9 @@ void MainWindow::on_pushButtonObj()
     }
 
     //calling create() to create mesh vbo data
+    //use vbo data to render Mesh obj
     ui->mygl->m_mesh.create();
+    ui->mygl->renderMesh();
 }
 
 void MainWindow::on_actionQuit_triggered()

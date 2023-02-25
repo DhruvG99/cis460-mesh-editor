@@ -8,6 +8,7 @@ SOURCES += \
     $$PWD/mainwindow.cpp \
     $$PWD/mesh.cpp \
     $$PWD/mygl.cpp \
+    $$PWD/scene/edgedisplay.cpp \
     $$PWD/shaderprogram.cpp \
     $$PWD/utils.cpp \
     $$PWD/la.cpp \
@@ -16,7 +17,8 @@ SOURCES += \
     $$PWD/cameracontrolshelp.cpp \
     $$PWD/openglcontext.cpp \
     $$PWD/scene/squareplane.cpp \
-    $$PWD/vertex.cpp
+    $$PWD/vertex.cpp \
+    $$PWD/vertexdisplay.cpp
 
 HEADERS += \
     $$PWD/face.h \
@@ -25,6 +27,7 @@ HEADERS += \
     $$PWD/mainwindow.h \
     $$PWD/mesh.h \
     $$PWD/mygl.h \
+    $$PWD/scene/edgedisplay.h \
     $$PWD/shaderprogram.h \
     $$PWD/utils.h \
     $$PWD/drawable.h \
@@ -33,4 +36,5 @@ HEADERS += \
     $$PWD/openglcontext.h \
     $$PWD/scene/squareplane.h\
     $$PWD/smartpointerhelp.h \
-    $$PWD/vertex.h
+    $$PWD/vertex.h \
+    $$PWD/vertexdisplay.h

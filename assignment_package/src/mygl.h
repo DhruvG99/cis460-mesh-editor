@@ -33,7 +33,8 @@ public:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
-
+    void renderMesh();
+    //initalized using context in the constructor
     Mesh m_mesh;
 protected:
     void keyPressEvent(QKeyEvent *e);
