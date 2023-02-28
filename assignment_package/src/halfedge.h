@@ -8,7 +8,7 @@ class Vertex;
 class Face;
 
 class HalfEdge
-//        : public Drawable
+        : public QListWidgetItem
 {
 private:
     HalfEdge* nextEdge;
@@ -26,8 +26,10 @@ public:
     void setFace(Face* f);
     void setNext(HalfEdge* e);
     void setSym(HalfEdge* e);
-    HalfEdge* getNext();
-    Vertex* getVert();
+    HalfEdge* getNext() const;
+    HalfEdge* getSym() const;
+    Face* getFace() const;
+    Vertex* getVert() const;
 };
 
 #endif // HALFEDGE_H

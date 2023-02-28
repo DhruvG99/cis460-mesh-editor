@@ -6,6 +6,7 @@ HalfEdge::HalfEdge()
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }
 
 HalfEdge::HalfEdge(Vertex* v)
@@ -13,6 +14,7 @@ HalfEdge::HalfEdge(Vertex* v)
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }
 
 HalfEdge::HalfEdge(HalfEdge* next, HalfEdge* sym, Face* f, Vertex* v)
@@ -20,6 +22,7 @@ HalfEdge::HalfEdge(HalfEdge* next, HalfEdge* sym, Face* f, Vertex* v)
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }
 
 void HalfEdge::setVert(Vertex* v)
@@ -44,12 +47,22 @@ void HalfEdge::setSym(HalfEdge* e)
     e->symEdge = this;
 }
 
-HalfEdge* HalfEdge::getNext()
+HalfEdge* HalfEdge::getNext() const
 {
     return this->nextEdge;
 }
 
-Vertex* HalfEdge::getVert()
+HalfEdge* HalfEdge::getSym() const
+{
+    return this->symEdge;
+}
+
+Face* HalfEdge::getFace() const
+{
+    return this->face;
+}
+
+Vertex* HalfEdge::getVert() const
 {
     return this->vert;
 }

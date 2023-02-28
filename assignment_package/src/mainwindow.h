@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#include <mesh.h>
 #include <QMainWindow>
 
 
@@ -17,9 +17,13 @@ public:
     ~MainWindow();
 
 private slots:
+    void addToListWidgets();
+
     void on_pushButtonObj();
 
     void on_actionQuit_triggered();
+
+    void setSelected();
 
     void on_actionCamera_Controls_triggered();
 

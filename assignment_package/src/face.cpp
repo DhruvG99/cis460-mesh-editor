@@ -6,6 +6,7 @@ Face::Face()
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }
 
 Face::Face(HalfEdge* edge, glm::vec3 v)
@@ -13,6 +14,7 @@ Face::Face(HalfEdge* edge, glm::vec3 v)
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }
 
 void Face::setEdge(HalfEdge* e)
@@ -20,7 +22,7 @@ void Face::setEdge(HalfEdge* e)
     this->halfedge = e;
 }
 
-HalfEdge* Face::getEdge()
+HalfEdge* Face::getEdge() const
 {
     return this->halfedge;
 }

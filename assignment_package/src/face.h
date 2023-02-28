@@ -2,12 +2,13 @@
 #define FACE_H
 #include<la.h>
 #include<drawable.h>
+#include<qlistwidget.h>
 
 class Vertex;
 class HalfEdge;
 
 class Face
-//        : public Drawable
+        : public QListWidgetItem
 {
 private:
     HalfEdge* halfedge;
@@ -17,7 +18,7 @@ public:
     Face();
     Face(HalfEdge*, glm::vec3);
     void setEdge(HalfEdge* e);
-    HalfEdge* getEdge();
+    HalfEdge* getEdge() const;
 };
 
 #endif // FACE_H

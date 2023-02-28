@@ -2,9 +2,11 @@
 static int count = 0;
 
 Vertex::Vertex()
+    : QListWidgetItem()
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }
 
 Vertex::Vertex(glm::vec4 v)
@@ -12,6 +14,7 @@ Vertex::Vertex(glm::vec4 v)
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }
 
 Vertex::Vertex(glm::vec4 v, HalfEdge* e)
@@ -19,4 +22,5 @@ Vertex::Vertex(glm::vec4 v, HalfEdge* e)
 {
     idx = count;
     count += 1;
+    QListWidgetItem::setText(QString::number(idx));
 }

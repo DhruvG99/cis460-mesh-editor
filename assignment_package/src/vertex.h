@@ -2,12 +2,13 @@
 #define VERTEX_H
 #include <la.h>
 #include <drawable.h>
+#include <QListWidgetItem>
 
 class HalfEdge;
 class Face;
 
 class Vertex
-//     : public Drawable
+     : public QListWidgetItem
 {
 public:
     glm::vec4 pos;

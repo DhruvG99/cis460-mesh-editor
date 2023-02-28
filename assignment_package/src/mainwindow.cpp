@@ -6,29 +6,60 @@
 #include <sstream>
 #include <string>
 #include <QFileDialog>
-#include <mesh.h>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
+
 {
     ui->setupUi(this);
     //context
     ui->mygl->setFocus();
 
+    addToListWidgets();
+
     connect(ui->pushButton, SIGNAL(clicked(bool)),
             this, SLOT(on_pushButtonObj()));
 
+    connect(ui->vertsListWidget, SIGNAL(itemSelectionChanged()),
+                         this, SLOT(setSelected()));
+
+    connect(ui->halfEdgesListWidget, SIGNAL(itemSelectionChanged()),
+                         this, SLOT(setSelected()));
+
+    connect(ui->facesListWidget, SIGNAL(itemSelectionChanged()),
+                         this, SLOT(setSelected()));
+
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-bool operator<(const std::pair<glm::vec4, glm::vec4>& p1, const std::pair<glm::vec4, glm::vec4>& p2)
+void MainWindow::setSelected()
 {
-    return true;
+    //use selectedItems()
+}
+
+void MainWindow::addToListWidgets()
+{
+    for(auto& vert: ui->mygl->m_mesh.vertexCollection)
+    {
+        ui->vertsListWidget->addItem(vert.get());
+    }
+
+    for(auto& edge: ui->mygl->m_mesh.halfedgeCollection)
+    {
+        ui->halfEdgesListWidget->addItem(edge.get());
+    }
+
+    for(auto& face: ui->mygl->m_mesh.faceCollection)
+    {
+        ui->facesListWidget->addItem(face.get());
+    }
 }
 
 void MainWindow::on_pushButtonObj()
@@ -54,6 +85,7 @@ void MainWindow::on_pushButtonObj()
             linestream >> pz;
             glm::vec4 pos = glm::vec4(px,py,pz,1);
             uPtr<Vertex> v = mkU<Vertex>(pos);
+
             ui->mygl->m_mesh.vertexCollection.push_back(std::move(v));;
         }
         else if(val0 == "vt")
@@ -105,7 +137,6 @@ void MainWindow::on_pushButtonObj()
                 tripCount += 1;
 
             }
-            //where is v pointing??
             //last edge to complete loop
             prev->setNext(currFace->getEdge());
         }
@@ -146,7 +177,6 @@ void MainWindow::on_pushButtonObj()
 
     //calling create() to create mesh vbo data
     //use vbo data to render Mesh obj
-    ui->mygl->m_mesh.create();
     ui->mygl->renderMesh();
 }
 

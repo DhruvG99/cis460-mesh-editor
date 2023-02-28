@@ -3,12 +3,13 @@ DEPENDPATH += $$PWD
 
 SOURCES += \
     $$PWD/face.cpp \
+    $$PWD/facedisplay.cpp \
     $$PWD/halfedge.cpp \
+    $$PWD/halfedgedisplay.cpp \
     $$PWD/main.cpp \
     $$PWD/mainwindow.cpp \
     $$PWD/mesh.cpp \
     $$PWD/mygl.cpp \
-    $$PWD/scene/edgedisplay.cpp \
     $$PWD/shaderprogram.cpp \
     $$PWD/utils.cpp \
     $$PWD/la.cpp \
@@ -22,12 +23,13 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/face.h \
+    $$PWD/facedisplay.h \
     $$PWD/halfedge.h \
+    $$PWD/halfedgedisplay.h \
     $$PWD/la.h \
     $$PWD/mainwindow.h \
     $$PWD/mesh.h \
     $$PWD/mygl.h \
-    $$PWD/scene/edgedisplay.h \
     $$PWD/shaderprogram.h \
     $$PWD/utils.h \
     $$PWD/drawable.h \

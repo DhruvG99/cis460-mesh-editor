@@ -1,16 +1,16 @@
-#ifndef EDGEDISPLAY_H
-#define EDGEDISPLAY_H
+#ifndef HALFEDGEDISPLAY_H
+#define HALFEDGEDISPLAY_H
 #include <halfedge.h>
+#include <drawable.h>
 
-class EdgeDisplay: public Drawable
+class HalfEdgeDisplay :Drawable
 {
-protected:
+private:
     HalfEdge* repEdge;
 public:
-    EdgeDisplay();
     void create() override;
     void updateEdge(HalfEdge*);
     GLenum drawMode() override;
 };
 
-#endif // EDGEDISPLAY_H
+#endif // HALFEDGEDISPLAY_H

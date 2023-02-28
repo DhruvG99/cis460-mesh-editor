@@ -1,6 +1,5 @@
 #include "mygl.h"
 #include <la.h>
-
 #include <iostream>
 #include <QApplication>
 #include <QKeyEvent>
@@ -10,6 +9,9 @@ MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
       m_geomSquare(this),
       m_progLambert(this), m_progFlat(this),
+      selectedVert(nullptr),
+      selectedEdge(nullptr),
+      selectedFace(nullptr),
       m_glCamera(),
       m_mesh(this)
 {
@@ -21,6 +23,7 @@ MyGL::~MyGL()
     makeCurrent();
     glDeleteVertexArrays(1, &vao);
     m_geomSquare.destroy();
+    m_mesh.destroy();
 }
 
 void MyGL::initializeGL()
@@ -35,13 +38,14 @@ void MyGL::initializeGL()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POLYGON_SMOOTH);
+
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
     // Set the size with which points should be rendered
     glPointSize(5);
     // Set the color with which the screen is filled at the start of each render call.
     glClearColor(0.5, 0.5, 0.5, 1);
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     printGLErrorLog();
 
     // Create a Vertex Attribute Object
@@ -80,13 +84,12 @@ void MyGL::resizeGL(int w, int h)
 //For example, when the function update() is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
-    // Clear the screen so that we only see newly drawn images
+//    // Clear the screen so that we only see newly drawn images
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
     m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
     m_progLambert.setCamPos(m_glCamera.eye);
     m_progFlat.setModelMatrix(glm::mat4(1.f));
-
     //Create a model matrix. This one rotates the square by PI/4 radians then translates it by <-2,0,0>.
     //Note that we have to transpose the model matrix before passing it to the shader
     //This is because OpenGL expects column-major matrices, but you've
@@ -106,15 +109,13 @@ void MyGL::paintGL()
 
 void MyGL::renderMesh()
 {
-    // Clear the screen so that we only see newly drawn images
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    // i don't know why this won't work. sorry.
+    m_mesh.create();
     m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
-//    m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
-//    m_progLambert.setCamPos(m_glCamera.eye);
     m_progFlat.setModelMatrix(glm::mat4(1.f));
-    //Draw the example sphere using our lambert shader
-    std::cout<<"Mesh: "<<std::endl;
+    m_mesh.create();
+    glClearColor(0.0,0.0,0.0,1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_progFlat.draw(m_mesh);
 }
 
@@ -156,7 +157,21 @@ void MyGL::keyPressEvent(QKeyEvent *e)
         m_glCamera.TranslateAlongUp(amount);
     } else if (e->key() == Qt::Key_R) {
         m_glCamera = Camera(this->width(), this->height());
+    } else if (e->key() == Qt::Key_N) {
+        selectedEdge = selectedEdge->getNext();
+    } else if (e->key() == Qt::Key_M) {
+        selectedEdge = selectedEdge->getSym();
+    } else if (e->key() == Qt::Key_F) {
+        selectedFace = selectedEdge->getFace();
+    } else if (e->key() == Qt::Key_V) {
+        selectedVert = selectedEdge->getVert();
+    } else if (e->key() == Qt::Key_H) {
+        selectedEdge = selectedVert->halfedge;
+    } else if ((e->key() == Qt::Key_3) &&
+               (e->modifiers()  == Qt::ShiftModifier)) {
+        selectedEdge = selectedFace->getEdge();
     }
+
     m_glCamera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
 }

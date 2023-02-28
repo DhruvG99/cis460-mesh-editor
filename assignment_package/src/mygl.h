@@ -20,7 +20,9 @@ private:
     SquarePlane m_geomSquare;// The instance of a unit cylinder we can use to render any cylinder
     ShaderProgram m_progLambert;// A shader program that uses lambertian reflection
     ShaderProgram m_progFlat;// A shader program that uses "flat" reflection (no shadowing at all)
-
+    Vertex* selectedVert;
+    HalfEdge* selectedEdge;
+    Face* selectedFace;
     GLuint vao; // A handle for our vertex array object. This will store the VBOs created in our geometry classes.
                 // Don't worry too much about this. Just know it is necessary in order to render geometry.
 
@@ -29,13 +31,13 @@ private:
 public:
     explicit MyGL(QWidget *parent = nullptr);
     ~MyGL();
-
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
     void renderMesh();
     //initalized using context in the constructor
     Mesh m_mesh;
+
 protected:
     void keyPressEvent(QKeyEvent *e);
 

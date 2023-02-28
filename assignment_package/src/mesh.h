@@ -30,7 +30,8 @@ public:
 
     Mesh(OpenGLContext*);
     ~Mesh();
-    void testMesh();
+    //used to test the mesh data structure
+    void testMesh() const;
     virtual void create() override;
 
     GLenum drawMode() override;
