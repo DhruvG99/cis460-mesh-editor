@@ -70,6 +70,9 @@ void MainWindow::on_pushButtonObj()
                                                     QString("*.obj"));
     std::ifstream myobj (filename.toStdString());
     std::string line;
+    ui->mygl->m_mesh.faceCollection.clear();
+    ui->mygl->m_mesh.halfedgeCollection.clear();
+    ui->mygl->m_mesh.vertexCollection.clear();
 
     //filling vertexCollection for Mesh
     while(myobj.good() && std::getline(myobj, line))
@@ -177,7 +180,9 @@ void MainWindow::on_pushButtonObj()
 
     //calling create() to create mesh vbo data
     //use vbo data to render Mesh obj
-    ui->mygl->renderMesh();
+    ui->mygl->m_mesh.create();
+    ui->mygl->meshCreated = true;
+    ui->mygl->update();
 }
 
 void MainWindow::on_actionQuit_triggered()

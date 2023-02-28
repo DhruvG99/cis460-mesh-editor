@@ -13,6 +13,7 @@ MyGL::MyGL(QWidget *parent)
       selectedEdge(nullptr),
       selectedFace(nullptr),
       m_glCamera(),
+      meshCreated(false),
       m_mesh(this)
 {
     setFocusPolicy(Qt::StrongFocus);
@@ -84,36 +85,48 @@ void MyGL::resizeGL(int w, int h)
 //For example, when the function update() is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
-//    // Clear the screen so that we only see newly drawn images
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
-    m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
-    m_progLambert.setCamPos(m_glCamera.eye);
-    m_progFlat.setModelMatrix(glm::mat4(1.f));
-    //Create a model matrix. This one rotates the square by PI/4 radians then translates it by <-2,0,0>.
-    //Note that we have to transpose the model matrix before passing it to the shader
-    //This is because OpenGL expects column-major matrices, but you've
-    //implemented row-major matrices.
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-2,0,0)) * glm::rotate(glm::mat4(), 0.25f * 3.14159f, glm::vec3(0,1,0));
-    //Send the geometry's transformation matrix to the shader
-    m_progLambert.setModelMatrix(model);
-    //Draw the example sphere using our lambert shader
-    m_progLambert.draw(m_geomSquare);
+    if(meshCreated)
+    {
+        glClearColor(0.5,0.5,0.5,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Now do the same to render the cylinder
-    //We've rotated it -45 degrees on the Z axis, then translated it to the point <2,2,0>
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(2,2,0)) * glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0,0,1));
-    m_progLambert.setModelMatrix(model);
-    m_progLambert.draw(m_geomSquare);
+        m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
+        m_progFlat.setModelMatrix(glm::mat4(1.f));
+        m_progFlat.draw(m_mesh);
+    }
+    else
+    {
+        glClearColor(0.2,0.0,0.0,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+//    // Clear the screen so that we only see newly drawn images
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
+//    m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
+//    m_progLambert.setCamPos(m_glCamera.eye);
+//    m_progFlat.setModelMatrix(glm::mat4(1.f));
+//    //Create a model matrix. This one rotates the square by PI/4 radians then translates it by <-2,0,0>.
+//    //Note that we have to transpose the model matrix before passing it to the shader
+//    //This is because OpenGL expects column-major matrices, but you've
+//    //implemented row-major matrices.
+//    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-2,0,0)) * glm::rotate(glm::mat4(), 0.25f * 3.14159f, glm::vec3(0,1,0));
+//    //Send the geometry's transformation matrix to the shader
+//    m_progLambert.setModelMatrix(model);
+//    //Draw the example sphere using our lambert shader
+//    m_progLambert.draw(m_geomSquare);
+
+//    //Now do the same to render the cylinder
+//    //We've rotated it -45 degrees on the Z axis, then translated it to the point <2,2,0>
+//    model = glm::translate(glm::mat4(1.0f), glm::vec3(2,2,0)) * glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0,0,1));
+//    m_progLambert.setModelMatrix(model);
+//    m_progLambert.draw(m_geomSquare);
 }
 
 void MyGL::renderMesh()
 {
-    // i don't know why this won't work. sorry.
     m_mesh.create();
     m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
     m_progFlat.setModelMatrix(glm::mat4(1.f));
-    m_mesh.create();
     glClearColor(0.0,0.0,0.0,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_progFlat.draw(m_mesh);

@@ -27,7 +27,6 @@ private:
                 // Don't worry too much about this. Just know it is necessary in order to render geometry.
 
     Camera m_glCamera;
-
 public:
     explicit MyGL(QWidget *parent = nullptr);
     ~MyGL();
@@ -36,6 +35,7 @@ public:
     void paintGL();
     void renderMesh();
     //initalized using context in the constructor
+    bool meshCreated;
     Mesh m_mesh;
 
 protected:

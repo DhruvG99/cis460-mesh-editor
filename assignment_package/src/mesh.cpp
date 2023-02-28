@@ -42,9 +42,8 @@ void Mesh::create()
 {
     std::vector<GLuint> idx;
     std::vector<glm::vec4> pos;
-    this->faceCollection.clear();
-    this->halfedgeCollection.clear();
-    this->vertexCollection.clear();
+    std::vector<glm::vec4> col;
+
     int numVert = 0;
     int offsetVert = 0;
     for(const uPtr<Face> &f: this->faceCollection)
@@ -55,6 +54,11 @@ void Mesh::create()
             numVert++;
             glm::vec4 p = curr->getVert()->pos;
             pos.push_back(p);
+            float col1 = (rand()%256)/255.0f;
+            float col2 = (rand()%256)/255.0f;
+            float col3 = (rand()%256)/255.0f;
+
+            col.push_back({col1,col2,col3,1.0});
             curr = curr->getNext();
         }while(curr != f->getEdge());
 
@@ -82,11 +86,6 @@ void Mesh::create()
     //same thing as above, but with arrays, for position
     mp_context->glBindBuffer(GL_ARRAY_BUFFER, bufPos);
     mp_context->glBufferData(GL_ARRAY_BUFFER, pos.size() * sizeof(glm::vec4), pos.data(), GL_STATIC_DRAW);
-
-    std::vector<glm::vec4> col {glm::vec4(1, 0, 0, 1),
-                                 glm::vec4(0, 1, 0, 1),
-                                 glm::vec4(0, 0, 1, 1),
-                                 glm::vec4(1, 1, 0, 1)};
 
     //random color. or leave black
     generateCol();
