@@ -29,7 +29,6 @@ public:
     std::map<std::pair<glm::vec4 , glm::vec4>, HalfEdge*, comp> edgeBounds;
 
     Mesh(OpenGLContext*);
-    ~Mesh();
     //used to test the mesh data structure
     void testMesh() const;
     virtual void create() override;

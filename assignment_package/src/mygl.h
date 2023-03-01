@@ -11,6 +11,10 @@
 #include <QOpenGLShaderProgram>
 #include <mesh.h>
 
+#include <vertexdisplay.h>
+#include <halfedgedisplay.h>
+#include <facedisplay.h>
+
 
 class MyGL
     : public OpenGLContext
@@ -20,9 +24,6 @@ private:
     SquarePlane m_geomSquare;// The instance of a unit cylinder we can use to render any cylinder
     ShaderProgram m_progLambert;// A shader program that uses lambertian reflection
     ShaderProgram m_progFlat;// A shader program that uses "flat" reflection (no shadowing at all)
-    Vertex* selectedVert;
-    HalfEdge* selectedEdge;
-    Face* selectedFace;
     GLuint vao; // A handle for our vertex array object. This will store the VBOs created in our geometry classes.
                 // Don't worry too much about this. Just know it is necessary in order to render geometry.
 
@@ -33,10 +34,15 @@ public:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
-    void renderMesh();
-    //initalized using context in the constructor
-    bool meshCreated;
+
+    bool isMeshCreated;
+    bool isVertSelected;
+    bool isEdgeSelected;
+    bool isFaceSelected;
     Mesh m_mesh;
+    VertexDisplay m_vert;
+    HalfEdgeDisplay m_edge;
+    FaceDisplay m_face;
 
 protected:
     void keyPressEvent(QKeyEvent *e);

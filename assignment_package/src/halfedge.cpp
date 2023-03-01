@@ -2,15 +2,20 @@
 
 static int count = 0;
 
-HalfEdge::HalfEdge()
+HalfEdge::HalfEdge(int reset)
+    :nextEdge(nullptr), symEdge(nullptr),
+      face(nullptr), vert(nullptr)
 {
+    if(!reset)
+        count = 0;
     idx = count;
     count += 1;
     QListWidgetItem::setText(QString::number(idx));
 }
 
 HalfEdge::HalfEdge(Vertex* v)
-    :vert(v)
+    :nextEdge(nullptr), symEdge(nullptr),
+      face(nullptr), vert(v)
 {
     idx = count;
     count += 1;

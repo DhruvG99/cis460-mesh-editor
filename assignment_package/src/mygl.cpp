@@ -9,12 +9,15 @@ MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
       m_geomSquare(this),
       m_progLambert(this), m_progFlat(this),
-      selectedVert(nullptr),
-      selectedEdge(nullptr),
-      selectedFace(nullptr),
       m_glCamera(),
-      meshCreated(false),
-      m_mesh(this)
+      isMeshCreated(false),
+      isVertSelected(false),
+      isEdgeSelected(false),
+      isFaceSelected(false),
+      m_mesh(this),
+      m_vert(this),
+      m_edge(this),
+      m_face(this)
 {
     setFocusPolicy(Qt::StrongFocus);
 }
@@ -85,7 +88,7 @@ void MyGL::resizeGL(int w, int h)
 //For example, when the function update() is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
-    if(meshCreated)
+    if(isMeshCreated)
     {
         glClearColor(0.5,0.5,0.5,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,45 +96,31 @@ void MyGL::paintGL()
         m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
         m_progFlat.setModelMatrix(glm::mat4(1.f));
         m_progFlat.draw(m_mesh);
+
+        glDisable(GL_DEPTH_TEST);
+        if(isFaceSelected)
+            m_progFlat.draw(m_face);
+        if(isEdgeSelected)
+            m_progFlat.draw(m_edge);
+        if(isVertSelected)
+            m_progFlat.draw(m_vert);
+        glEnable(GL_DEPTH_TEST);
     }
     else
     {
-        glClearColor(0.2,0.0,0.0,1);
+        glClearColor(0.0,0.0,0.1,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
-//    // Clear the screen so that we only see newly drawn images
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
 //    m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
 //    m_progLambert.setCamPos(m_glCamera.eye);
-//    m_progFlat.setModelMatrix(glm::mat4(1.f));
-//    //Create a model matrix. This one rotates the square by PI/4 radians then translates it by <-2,0,0>.
-//    //Note that we have to transpose the model matrix before passing it to the shader
-//    //This is because OpenGL expects column-major matrices, but you've
-//    //implemented row-major matrices.
-//    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-2,0,0)) * glm::rotate(glm::mat4(), 0.25f * 3.14159f, glm::vec3(0,1,0));
-//    //Send the geometry's transformation matrix to the shader
 //    m_progLambert.setModelMatrix(model);
 //    //Draw the example sphere using our lambert shader
 //    m_progLambert.draw(m_geomSquare);
 
-//    //Now do the same to render the cylinder
-//    //We've rotated it -45 degrees on the Z axis, then translated it to the point <2,2,0>
 //    model = glm::translate(glm::mat4(1.0f), glm::vec3(2,2,0)) * glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0,0,1));
 //    m_progLambert.setModelMatrix(model);
 //    m_progLambert.draw(m_geomSquare);
 }
-
-void MyGL::renderMesh()
-{
-    m_mesh.create();
-    m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
-    m_progFlat.setModelMatrix(glm::mat4(1.f));
-    glClearColor(0.0,0.0,0.0,1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    m_progFlat.draw(m_mesh);
-}
-
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {
@@ -171,18 +160,18 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_R) {
         m_glCamera = Camera(this->width(), this->height());
     } else if (e->key() == Qt::Key_N) {
-        selectedEdge = selectedEdge->getNext();
+//        displayEdge = displayEdge->getNext();
     } else if (e->key() == Qt::Key_M) {
-        selectedEdge = selectedEdge->getSym();
+//        displayEdge = displayEdge->getSym();
     } else if (e->key() == Qt::Key_F) {
-        selectedFace = selectedEdge->getFace();
+//        displayFace = displayEdge->getFace();
     } else if (e->key() == Qt::Key_V) {
-        selectedVert = selectedEdge->getVert();
+//        displayVert = displayEdge->getVert();
     } else if (e->key() == Qt::Key_H) {
-        selectedEdge = selectedVert->halfedge;
+//        displayEdge = displayVert->halfedge;
     } else if ((e->key() == Qt::Key_3) &&
                (e->modifiers()  == Qt::ShiftModifier)) {
-        selectedEdge = selectedFace->getEdge();
+//        displayEdge = displayFace->getEdge();
     }
 
     m_glCamera.RecomputeAttributes();

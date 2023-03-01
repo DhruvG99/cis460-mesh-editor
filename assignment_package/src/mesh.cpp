@@ -13,10 +13,6 @@ GLenum Mesh::drawMode()
     return GL_TRIANGLES;
 }
 
-Mesh::~Mesh()
-{
-
-}
 
 void Mesh::testMesh() const
 {
@@ -54,11 +50,7 @@ void Mesh::create()
             numVert++;
             glm::vec4 p = curr->getVert()->pos;
             pos.push_back(p);
-            float col1 = (rand()%256)/255.0f;
-            float col2 = (rand()%256)/255.0f;
-            float col3 = (rand()%256)/255.0f;
-
-            col.push_back({col1,col2,col3,1.0});
+            col.push_back(f->getColor());
             curr = curr->getNext();
         }while(curr != f->getEdge());
 

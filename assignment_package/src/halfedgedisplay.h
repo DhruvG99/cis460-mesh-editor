@@ -3,13 +3,14 @@
 #include <halfedge.h>
 #include <drawable.h>
 
-class HalfEdgeDisplay :Drawable
+class HalfEdgeDisplay: public Drawable
 {
 private:
     HalfEdge* repEdge;
 public:
-    void create() override;
+    HalfEdgeDisplay(OpenGLContext*);
     void updateEdge(HalfEdge*);
+    void create() override;
     GLenum drawMode() override;
 };
 

@@ -17,19 +17,17 @@ MainWindow::MainWindow(QWidget *parent) :
     //context
     ui->mygl->setFocus();
 
-    addToListWidgets();
-
     connect(ui->pushButton, SIGNAL(clicked(bool)),
             this, SLOT(on_pushButtonObj()));
 
     connect(ui->vertsListWidget, SIGNAL(itemSelectionChanged()),
-                         this, SLOT(setSelected()));
+                         this, SLOT(slot_selectVert()));
 
     connect(ui->halfEdgesListWidget, SIGNAL(itemSelectionChanged()),
-                         this, SLOT(setSelected()));
+                         this, SLOT(slot_selectEdge()));
 
     connect(ui->facesListWidget, SIGNAL(itemSelectionChanged()),
-                         this, SLOT(setSelected()));
+                         this, SLOT(slot_selectFace()));
 
 }
 
@@ -39,8 +37,36 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setSelected()
+void MainWindow::slot_selectVert()
 {
+    QListWidgetItem* currentItem = ui->vertsListWidget->currentItem();
+    Vertex* v =  dynamic_cast<Vertex*>(currentItem);
+    ui->mygl->m_vert.updateVertex(v);
+    ui->mygl->m_vert.create();
+    ui->mygl->isVertSelected = true;
+    ui->mygl->update();
+    //use selectedItems()
+}
+
+void MainWindow::slot_selectEdge()
+{
+    QListWidgetItem* currentItem = ui->halfEdgesListWidget->currentItem();
+    HalfEdge* e =  dynamic_cast<HalfEdge*>(currentItem);
+    ui->mygl->m_edge.updateEdge(e);
+    ui->mygl->m_edge.create();
+    ui->mygl->isEdgeSelected = true;
+    ui->mygl->update();
+    //use selectedItems()
+}
+
+void MainWindow::slot_selectFace()
+{
+    QListWidgetItem* currentItem = ui->facesListWidget->currentItem();
+    Face* f =  dynamic_cast<Face*>(currentItem);
+    ui->mygl->m_face.updateFace(f);
+    ui->mygl->m_face.create();
+    ui->mygl->isFaceSelected = true;
+    ui->mygl->update();
     //use selectedItems()
 }
 
@@ -62,17 +88,39 @@ void MainWindow::addToListWidgets()
     }
 }
 
+void MainWindow::resetLists()
+{
+    ui->mygl->isMeshCreated = false;
+    ui->mygl->isVertSelected = false;
+    ui->mygl->isEdgeSelected = false;
+    ui->mygl->isFaceSelected = false;
+
+    ui->vertsListWidget->clear();
+    ui->halfEdgesListWidget->clear();
+    ui->facesListWidget->clear();
+}
+
 void MainWindow::on_pushButtonObj()
 {
+    //reset mesh
+    ui->mygl->m_mesh.vertexCollection.clear();
+    ui->mygl->m_mesh.halfedgeCollection.clear();
+    ui->mygl->m_mesh.faceCollection.clear();
+    ui->mygl->m_mesh.edgeBounds.clear();
+    //reset list widget
+    resetLists();
+
     QString filename = QFileDialog::getOpenFileName(0,
                                                     QString("Load OBJ"),
                                                     QDir::currentPath().append(QString("../..")),
                                                     QString("*.obj"));
     std::ifstream myobj (filename.toStdString());
     std::string line;
-    ui->mygl->m_mesh.faceCollection.clear();
-    ui->mygl->m_mesh.halfedgeCollection.clear();
-    ui->mygl->m_mesh.vertexCollection.clear();
+    //to update the static counts whenever a new mesh
+    //is loaded. (used for list widgets)
+    int vertCount = 0;
+    int edgeCount = 0;
+    int faceCount = 0;
 
     //filling vertexCollection for Mesh
     while(myobj.good() && std::getline(myobj, line))
@@ -87,9 +135,9 @@ void MainWindow::on_pushButtonObj()
             linestream >> py;
             linestream >> pz;
             glm::vec4 pos = glm::vec4(px,py,pz,1);
-            uPtr<Vertex> v = mkU<Vertex>(pos);
-
-            ui->mygl->m_mesh.vertexCollection.push_back(std::move(v));;
+            uPtr<Vertex> v = mkU<Vertex>(pos, vertCount);
+            vertCount++;
+            ui->mygl->m_mesh.vertexCollection.push_back(std::move(v));
         }
         else if(val0 == "vt")
             break;
@@ -97,6 +145,7 @@ void MainWindow::on_pushButtonObj()
 
     myobj.seekg(0);
     //reading file to get vertex indices and link edges
+    //and filling facecollection and halfedgecollection
     while(myobj.good() && std::getline(myobj, line))
     {
         std::string val0;
@@ -104,8 +153,13 @@ void MainWindow::on_pushButtonObj()
         linestream >> val0;
         if(val0 == "f")
         {
+            glm::vec4 col = {(rand()%256)/255.0f,
+                            (rand()%256)/255.0f,
+                            (rand()%256)/255.0f,
+                            1.0f};
             HalfEdge* prev;
-            uPtr<Face> f = mkU<Face>();
+            uPtr<Face> f = mkU<Face>(col, faceCount);
+            faceCount++;
             Face* currFace = f.get();
             ui->mygl->m_mesh.faceCollection.push_back(std::move(f));
 
@@ -116,7 +170,8 @@ void MainWindow::on_pushButtonObj()
             {
                 vertInd = std::stoi(triplet.substr(0, triplet.find('/')));
                 Vertex *v = ui->mygl->m_mesh.vertexCollection[vertInd-1].get();
-                uPtr<HalfEdge> edge = mkU<HalfEdge>();
+                uPtr<HalfEdge> edge = mkU<HalfEdge>(edgeCount);
+                edgeCount++;
                 HalfEdge* currEdge = edge.get();
 
                 //sets the vertex as the leading vertex for edge,
@@ -177,11 +232,11 @@ void MainWindow::on_pushButtonObj()
             mapEdge = mapEdge->getNext();
         }while(mapEdge != f->getEdge());
     }
-
     //calling create() to create mesh vbo data
     //use vbo data to render Mesh obj
+    addToListWidgets();
     ui->mygl->m_mesh.create();
-    ui->mygl->meshCreated = true;
+    ui->mygl->isMeshCreated = true;
     ui->mygl->update();
 }
 

@@ -1,11 +1,16 @@
 #include "halfedgedisplay.h"
 
+HalfEdgeDisplay::HalfEdgeDisplay(OpenGLContext* context)
+    :Drawable(context)
+{}
 
 void HalfEdgeDisplay::create()
 {
     std::vector<glm::vec4> pos = {repEdge->getVert()->pos};
+    std::vector<glm::vec4> col {glm::vec4(1.0, 0.9, 0.0, 1),
+                               glm::vec4(1.0, 0.0, 0.0, 1)};
     std::vector<GLuint> idx = {0,1};
-    //finding the other vertex
+    //finding the other vertex (previous edge's vertex)
     HalfEdge* curr = repEdge;
     do
     {
@@ -19,20 +24,15 @@ void HalfEdgeDisplay::create()
 
     generateIdx();
     mp_context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
-    mp_context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint), idx.data(), GL_STATIC_DRAW);
+    mp_context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, idx.size()*sizeof(GLuint), idx.data(), GL_STATIC_DRAW);
 
     generatePos();
-    //same thing as above, but with arrays, for position
     mp_context->glBindBuffer(GL_ARRAY_BUFFER, bufPos);
-    mp_context->glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4), pos.data(), GL_STATIC_DRAW);
+    mp_context->glBufferData(GL_ARRAY_BUFFER, pos.size()*sizeof(glm::vec4), pos.data(), GL_STATIC_DRAW);
 
-    std::vector<glm::vec4> col {glm::vec4(1, 0, 0, 1),
-                               glm::vec4(1, 0, 0, 1)};
-
-    //random color. or leave black
     generateCol();
     mp_context->glBindBuffer(GL_ARRAY_BUFFER, bufCol);
-    mp_context->glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4), col.data(), GL_STATIC_DRAW);
+    mp_context->glBufferData(GL_ARRAY_BUFFER, col.size()*sizeof(glm::vec4), col.data(), GL_STATIC_DRAW);
 
 }
 

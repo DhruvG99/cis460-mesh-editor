@@ -18,12 +18,15 @@ public:
 
 private slots:
     void addToListWidgets();
+    void resetLists();
 
     void on_pushButtonObj();
 
     void on_actionQuit_triggered();
 
-    void setSelected();
+    void slot_selectVert();
+    void slot_selectEdge();
+    void slot_selectFace();
 
     void on_actionCamera_Controls_triggered();
 

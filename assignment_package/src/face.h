@@ -12,12 +12,14 @@ class Face
 {
 private:
     HalfEdge* halfedge;
-    glm::vec3 color;
+    glm::vec4 color;
     int idx;
 public:
     Face();
-    Face(HalfEdge*, glm::vec3);
-    void setEdge(HalfEdge* e);
+    Face(glm::vec4, int reset = 1);
+    Face(HalfEdge*, glm::vec4);
+    void setEdge(HalfEdge*);
+    glm::vec4 getColor() const;
     HalfEdge* getEdge() const;
 };
 

@@ -2,6 +2,7 @@
 #define VERTEX_H
 #include <la.h>
 #include <drawable.h>
+
 #include <QListWidgetItem>
 
 class HalfEdge;
@@ -16,7 +17,7 @@ public:
     int idx;
 
     Vertex();
-    Vertex(glm::vec4);
+    Vertex(glm::vec4, int reset = 1);
     Vertex(glm::vec4, HalfEdge*);
 };
 

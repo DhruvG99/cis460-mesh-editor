@@ -4,11 +4,12 @@
 #include <drawable.h>
 #include <halfedge.h>
 
-class FaceDisplay: Drawable
+class FaceDisplay: public Drawable
 {
 private:
     Face* repFace;
 public:
+    FaceDisplay(OpenGLContext*);
     void create() override;
     GLenum drawMode() override;
     void updateFace(Face*);
