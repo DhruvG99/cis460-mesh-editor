@@ -24,9 +24,9 @@ private slots:
 
     void on_actionQuit_triggered();
 
-    void slot_selectVert();
-    void slot_selectEdge();
-    void slot_selectFace();
+    void slot_selectVert(QListWidgetItem*);
+    void slot_selectEdge(QListWidgetItem*);
+    void slot_selectFace(QListWidgetItem*);
 
     void on_actionCamera_Controls_triggered();
 

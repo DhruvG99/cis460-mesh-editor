@@ -20,14 +20,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton, SIGNAL(clicked(bool)),
             this, SLOT(on_pushButtonObj()));
 
-    connect(ui->vertsListWidget, SIGNAL(itemSelectionChanged()),
-                         this, SLOT(slot_selectVert()));
+    connect(ui->vertsListWidget, SIGNAL(itemClicked(QListWidgetItem*)),
+                         this, SLOT(slot_selectVert(QListWidgetItem*)));
 
-    connect(ui->halfEdgesListWidget, SIGNAL(itemSelectionChanged()),
-                         this, SLOT(slot_selectEdge()));
+    connect(ui->halfEdgesListWidget, SIGNAL(itemClicked(QListWidgetItem*)),
+                         this, SLOT(slot_selectEdge(QListWidgetItem*)));
 
-    connect(ui->facesListWidget, SIGNAL(itemSelectionChanged()),
-                         this, SLOT(slot_selectFace()));
+    connect(ui->facesListWidget, SIGNAL(itemClicked(QListWidgetItem*)),
+                         this, SLOT(slot_selectFace(QListWidgetItem*)));
 
 }
 
@@ -37,9 +37,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::slot_selectVert()
+void MainWindow::slot_selectVert(QListWidgetItem *item)
 {
-    QListWidgetItem* currentItem = ui->vertsListWidget->currentItem();
+    QListWidgetItem* currentItem = item;
     Vertex* v =  static_cast<Vertex*>(currentItem);
     ui->mygl->m_vert.updateVertex(v);
     ui->mygl->m_vert.create();
@@ -48,9 +48,9 @@ void MainWindow::slot_selectVert()
     //use selectedItems()
 }
 
-void MainWindow::slot_selectEdge()
+void MainWindow::slot_selectEdge(QListWidgetItem* item)
 {
-    QListWidgetItem* currentItem = ui->halfEdgesListWidget->currentItem();
+    QListWidgetItem* currentItem = item;
     HalfEdge* e =  static_cast<HalfEdge*>(currentItem);
     ui->mygl->m_edge.updateEdge(e);
     ui->mygl->m_edge.create();
@@ -59,9 +59,9 @@ void MainWindow::slot_selectEdge()
     //use selectedItems()
 }
 
-void MainWindow::slot_selectFace()
+void MainWindow::slot_selectFace(QListWidgetItem* item)
 {
-    QListWidgetItem* currentItem = ui->facesListWidget->currentItem();
+    QListWidgetItem* currentItem = item;
     Face* f =  static_cast<Face*>(currentItem);
     ui->mygl->m_face.updateFace(f);
     ui->mygl->m_face.create();
@@ -103,12 +103,11 @@ void MainWindow::resetLists()
 void MainWindow::on_pushButtonObj()
 {
     //reset mesh
-    //PROBLEMMMMMMMM
     ui->mygl->m_mesh.vertexCollection.clear();
     ui->mygl->m_mesh.halfedgeCollection.clear();
     ui->mygl->m_mesh.faceCollection.clear();
     ui->mygl->m_mesh.edgeBounds.clear();
-    //reset list widget
+    //reset list widget and all bool vals
     resetLists();
 
     QString filename = QFileDialog::getOpenFileName(0,
@@ -202,7 +201,6 @@ void MainWindow::on_pushButtonObj()
     {
         //The edge I'm trying to set a sym of
         //and also adding the bounds of
-        std::cout<<"Face"<<std::endl;
         HalfEdge* mapEdge = f->getEdge();
         do
         {
@@ -222,7 +220,6 @@ void MainWindow::on_pushButtonObj()
             //the symEdges will have symmetrical positions
             std::pair<glm::vec4, glm::vec4> p = std::make_pair(prevV->pos, nextV->pos);
             std::pair<glm::vec4, glm::vec4> symp = std::make_pair(nextV->pos, prevV->pos);
-            std::cout<<ui->mygl->m_mesh.edgeBounds.size()<<std::endl;
             if(ui->mygl->m_mesh.edgeBounds.find(symp) != ui->mygl->m_mesh.edgeBounds.end())
                 mapEdge->setSym(ui->mygl->m_mesh.edgeBounds[symp]);
             else
