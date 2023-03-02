@@ -7,7 +7,7 @@ VertexDisplay::VertexDisplay(OpenGLContext* context)
 void VertexDisplay::create()
 {
     std::vector<glm::vec4> pos {repVertex->pos};
-    std::vector<glm::vec4> col {glm::vec4(1, 0, 0, 1)};
+    std::vector<glm::vec4> col {glm::vec4(1, 1, 1, 1)};
     //number of vertices being drawn
     count = 1;
 
