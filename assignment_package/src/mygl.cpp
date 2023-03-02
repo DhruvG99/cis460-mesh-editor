@@ -28,6 +28,9 @@ MyGL::~MyGL()
     glDeleteVertexArrays(1, &vao);
     m_geomSquare.destroy();
     m_mesh.destroy();
+    m_vert.destroy();
+    m_edge.destroy();
+    m_face.destroy();
 }
 
 void MyGL::initializeGL()
@@ -108,7 +111,7 @@ void MyGL::paintGL()
     }
     else
     {
-        glClearColor(0.0,0.0,0.1,1);
+        glClearColor(0.2,0.0,0.4,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 //    m_progLambert.setViewProjMatrix(m_glCamera.getViewProj());
@@ -160,20 +163,54 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_R) {
         m_glCamera = Camera(this->width(), this->height());
     } else if (e->key() == Qt::Key_N) {
-//        displayEdge = displayEdge->getNext();
+        if(isEdgeSelected)
+        {
+            HalfEdge* nextEdge = m_edge.getEdge()->getNext();
+            m_edge.updateEdge(nextEdge);
+            m_edge.create();
+            isEdgeSelected = true;
+        }
     } else if (e->key() == Qt::Key_M) {
-//        displayEdge = displayEdge->getSym();
+        if(isEdgeSelected)
+        {
+            HalfEdge* symEdge = m_edge.getEdge()->getSym();
+            m_edge.updateEdge(symEdge);
+            m_edge.create();
+            isEdgeSelected = true;
+        }
     } else if (e->key() == Qt::Key_F) {
-//        displayFace = displayEdge->getFace();
+        if(isEdgeSelected)
+        {
+            Face* newFace = m_edge.getEdge()->getFace();
+            m_face.updateFace(newFace);
+            m_face.create();
+            isFaceSelected = true;
+        }
     } else if (e->key() == Qt::Key_V) {
-//        displayVert = displayEdge->getVert();
+        if(isEdgeSelected)
+        {
+            Vertex* newVert = m_edge.getEdge()->getVert();
+            m_vert.updateVertex(newVert);
+            m_vert.create();
+            isVertSelected = true;
+        }
     } else if (e->key() == Qt::Key_H) {
-//        displayEdge = displayVert->halfedge;
-    } else if ((e->key() == Qt::Key_3) &&
-               (e->modifiers()  == Qt::ShiftModifier)) {
-//        displayEdge = displayFace->getEdge();
+        if(isVertSelected)
+        {
+            HalfEdge* newEdge = m_vert.getVertex()->halfedge;
+            m_edge.updateEdge(newEdge);
+            m_edge.create();
+            isEdgeSelected = true;
+        }
+    } else if (e->keyCombination() == QKeyCombination(Qt::ShiftModifier, Qt::Key_H)) {
+        if(isFaceSelected)
+        {
+            HalfEdge* newEdge = m_face.getFace()->getEdge();
+            m_edge.updateEdge(newEdge);
+            m_edge.create();
+            isEdgeSelected = true;
+        }
     }
-
     m_glCamera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
 }

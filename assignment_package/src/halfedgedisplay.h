@@ -10,6 +10,7 @@ private:
 public:
     HalfEdgeDisplay(OpenGLContext*);
     void updateEdge(HalfEdge*);
+    HalfEdge* getEdge();
     void create() override;
     GLenum drawMode() override;
 };

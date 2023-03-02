@@ -40,7 +40,7 @@ MainWindow::~MainWindow()
 void MainWindow::slot_selectVert()
 {
     QListWidgetItem* currentItem = ui->vertsListWidget->currentItem();
-    Vertex* v =  dynamic_cast<Vertex*>(currentItem);
+    Vertex* v =  static_cast<Vertex*>(currentItem);
     ui->mygl->m_vert.updateVertex(v);
     ui->mygl->m_vert.create();
     ui->mygl->isVertSelected = true;
@@ -51,7 +51,7 @@ void MainWindow::slot_selectVert()
 void MainWindow::slot_selectEdge()
 {
     QListWidgetItem* currentItem = ui->halfEdgesListWidget->currentItem();
-    HalfEdge* e =  dynamic_cast<HalfEdge*>(currentItem);
+    HalfEdge* e =  static_cast<HalfEdge*>(currentItem);
     ui->mygl->m_edge.updateEdge(e);
     ui->mygl->m_edge.create();
     ui->mygl->isEdgeSelected = true;
@@ -62,7 +62,7 @@ void MainWindow::slot_selectEdge()
 void MainWindow::slot_selectFace()
 {
     QListWidgetItem* currentItem = ui->facesListWidget->currentItem();
-    Face* f =  dynamic_cast<Face*>(currentItem);
+    Face* f =  static_cast<Face*>(currentItem);
     ui->mygl->m_face.updateFace(f);
     ui->mygl->m_face.create();
     ui->mygl->isFaceSelected = true;
@@ -103,6 +103,7 @@ void MainWindow::resetLists()
 void MainWindow::on_pushButtonObj()
 {
     //reset mesh
+    //PROBLEMMMMMMMM
     ui->mygl->m_mesh.vertexCollection.clear();
     ui->mygl->m_mesh.halfedgeCollection.clear();
     ui->mygl->m_mesh.faceCollection.clear();
@@ -183,13 +184,9 @@ void MainWindow::on_pushButtonObj()
                 ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(edge));
 
                 if(tripCount != 0)
-                {
                     prev->setNext(currEdge);
-                }
                 else
-                {
                     currFace->setEdge(currEdge); //used for last edge
-                }
 
                 prev = currEdge;
                 tripCount += 1;
@@ -205,6 +202,7 @@ void MainWindow::on_pushButtonObj()
     {
         //The edge I'm trying to set a sym of
         //and also adding the bounds of
+        std::cout<<"Face"<<std::endl;
         HalfEdge* mapEdge = f->getEdge();
         do
         {
@@ -219,16 +217,17 @@ void MainWindow::on_pushButtonObj()
             Vertex* prevV = currEdge->getVert();
             Vertex* nextV = mapEdge->getVert();
             //if the above pos already exist in my map
-            //meaning I need to set a sym with that map value - edge
+            //meaning I need to set a sym with that unord_map value - edge
             //i'm comparing the reverse of the pair to because
             //the symEdges will have symmetrical positions
             std::pair<glm::vec4, glm::vec4> p = std::make_pair(prevV->pos, nextV->pos);
-            if(ui->mygl->m_mesh.edgeBounds.find(std::make_pair(nextV->pos, prevV->pos)) != ui->mygl->m_mesh.edgeBounds.end())
-            {
-                mapEdge->setSym(ui->mygl->m_mesh.edgeBounds[p]);
-            }
+            std::pair<glm::vec4, glm::vec4> symp = std::make_pair(nextV->pos, prevV->pos);
+            std::cout<<ui->mygl->m_mesh.edgeBounds.size()<<std::endl;
+            if(ui->mygl->m_mesh.edgeBounds.find(symp) != ui->mygl->m_mesh.edgeBounds.end())
+                mapEdge->setSym(ui->mygl->m_mesh.edgeBounds[symp]);
+            else
+                ui->mygl->m_mesh.edgeBounds[p] = mapEdge; //map insertion
 
-            ui->mygl->m_mesh.edgeBounds[p] = mapEdge; //map insertion
             mapEdge = mapEdge->getNext();
         }while(mapEdge != f->getEdge());
     }

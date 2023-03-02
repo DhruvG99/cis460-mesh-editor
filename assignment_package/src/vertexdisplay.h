@@ -11,6 +11,7 @@ public:
     VertexDisplay(OpenGLContext*);
     void create() override;
     void updateVertex(Vertex*);
+    Vertex* getVertex();
     GLenum drawMode() override;
 };
 

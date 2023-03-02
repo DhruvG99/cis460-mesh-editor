@@ -6,15 +6,42 @@
 #include <halfedge.h>
 #include <drawable.h>
 #include <openglcontext.h>
+#include <iostream>
+//struct comp
+//{
+//    template<typename T>
+//    bool operator()(const T &l, const T &r) const
+//    {
+//        return (glm::all(glm::lessThanEqual(l.first,r.first)) &&
+//                glm::all(glm::lessThanEqual(l.second,r.second)));
+//    }
+//};
 
-struct comp
+//hash function creation from here
+//https://stackoverflow.com/questions/32685540/why-cant-i-compile-an-unordered-map-with-a-pair-as-key
+class pair_hash
 {
-    template<typename T>
-    bool operator()(const T &l, const T &r) const
+public:
+    std::size_t operator () (const std::pair<glm::vec4,glm::vec4>& p) const
     {
-        if(glm::all(glm::lessThan(l.first,r.first)))
-            return true;
-        return false;
+        auto& p1 = p.first;
+        auto& p2 = p.second;
+        std::size_t seed;
+        seed = (std::hash<float>()(p1.x) ^ std::hash<float>()(p2.x)) >> 3;
+        seed ^= (std::hash<float>()(p1.y) ^ std::hash<float>()(p2.y)) << 5;
+        seed ^= (std::hash<float>()(p1.z) ^ std::hash<float>()(p2.z)) >> 7;
+
+        return seed;
+    }
+};
+
+class pair_equal
+{
+public:
+    bool operator () (const std::pair<glm::vec4,glm::vec4>& p1, const std::pair<glm::vec4,glm::vec4>& p2) const
+    {
+        return (glm::all(glm::equal(p1.first, p2.first)) &&
+                glm::all(glm::equal(p1.second, p2.second)));
     }
 };
 
@@ -26,7 +53,7 @@ public:
     std::vector<uPtr<Face>> faceCollection;
     std::vector<uPtr<HalfEdge>> halfedgeCollection;
     std::vector<uPtr<Vertex>> vertexCollection;
-    std::map<std::pair<glm::vec4 , glm::vec4>, HalfEdge*, comp> edgeBounds;
+    std::unordered_map<std::pair<glm::vec4 , glm::vec4>, HalfEdge*, pair_hash, pair_equal> edgeBounds;
 
     Mesh(OpenGLContext*);
     //used to test the mesh data structure

@@ -56,3 +56,8 @@ void FaceDisplay::updateFace(Face* face)
 {
     this->repFace = face;
 }
+
+Face* FaceDisplay::getFace()
+{
+    return this->repFace;
+}

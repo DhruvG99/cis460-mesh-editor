@@ -13,6 +13,7 @@ public:
     void create() override;
     GLenum drawMode() override;
     void updateFace(Face*);
+    Face* getFace();
 };
 
 #endif // FACEDISPLAY_H

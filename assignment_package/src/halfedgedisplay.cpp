@@ -4,6 +4,11 @@ HalfEdgeDisplay::HalfEdgeDisplay(OpenGLContext* context)
     :Drawable(context)
 {}
 
+HalfEdge* HalfEdgeDisplay::getEdge()
+{
+    return this->repEdge;
+}
+
 void HalfEdgeDisplay::create()
 {
     std::vector<glm::vec4> pos = {repEdge->getVert()->pos};

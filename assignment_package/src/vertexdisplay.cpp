@@ -30,6 +30,11 @@ void VertexDisplay::updateVertex(Vertex* newVert)
     this->repVertex = newVert;
 }
 
+Vertex* VertexDisplay::getVertex()
+{
+    return this->repVertex;
+}
+
 GLenum VertexDisplay::drawMode()
 {
     return GL_POINTS;
