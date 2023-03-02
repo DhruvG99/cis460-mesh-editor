@@ -195,17 +195,20 @@ void MyGL::keyPressEvent(QKeyEvent *e)
             isVertSelected = true;
         }
     } else if (e->key() == Qt::Key_H) {
-        if(isVertSelected)
+        //e->keyCombination() == QKeyCombination(Qt::ShiftModifier, Qt::Key_H
+        if(e->modifiers() == Qt::ShiftModifier)
+        {
+            if(isFaceSelected)
+            {
+                HalfEdge* newEdge = m_face.getFace()->getEdge();
+                m_edge.updateEdge(newEdge);
+                m_edge.create();
+                isEdgeSelected = true;
+            }
+        }
+        else if(isVertSelected)
         {
             HalfEdge* newEdge = m_vert.getVertex()->halfedge;
-            m_edge.updateEdge(newEdge);
-            m_edge.create();
-            isEdgeSelected = true;
-        }
-    } else if (e->keyCombination() == QKeyCombination(Qt::ShiftModifier, Qt::Key_H)) {
-        if(isFaceSelected)
-        {
-            HalfEdge* newEdge = m_face.getFace()->getEdge();
             m_edge.updateEdge(newEdge);
             m_edge.create();
             isEdgeSelected = true;
