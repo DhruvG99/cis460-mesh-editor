@@ -15,8 +15,7 @@ private:
     glm::vec4 color;
     int idx;
 public:
-    Face();
-    Face(glm::vec4, int reset = 1);
+    Face(int reset = 1);
     Face(HalfEdge*, glm::vec4);
     void setEdge(HalfEdge*);
     glm::vec4 getColor() const;

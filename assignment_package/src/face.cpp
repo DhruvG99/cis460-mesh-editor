@@ -3,21 +3,17 @@
 
 static int count = 0;
 
-Face::Face()
-    :halfedge(nullptr), color()
-{
-    idx = count;
-    count += 1;
-    QListWidgetItem::setText(QString::number(idx));
-}
-
-Face::Face(glm::vec4 v, int reset)
-    :halfedge(nullptr), color(v)
+Face::Face(int reset)
+    :halfedge(nullptr)
 {
     if(!reset)
         count = 0;
     idx = count;
     count += 1;
+    this->color = {(rand()%256)/255.0f,
+                    (rand()%256)/255.0f,
+                    (rand()%256)/255.0f,
+                    1.0f};
     QListWidgetItem::setText(QString::number(idx));
 }
 
