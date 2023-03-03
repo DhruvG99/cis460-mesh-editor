@@ -19,10 +19,13 @@ public:
 private slots:
     void addToListWidgets();
     void resetLists();
+    void smoothHE(HalfEdge*, glm::vec4);
+    void quadFace(); //quadrangulate the face
 
     void on_pushButtonObj();
     void on_pushButtonSplit();
     void on_pushButtonTriangulate();
+    void on_pushButtonCatmullClark();
 
     void on_actionQuit_triggered();
 
@@ -32,8 +35,6 @@ private slots:
     void slot_selectVert(QListWidgetItem*);
     void slot_selectEdge(QListWidgetItem*);
     void slot_selectFace(QListWidgetItem*);
-
-
 
     void on_actionCamera_Controls_triggered();
 

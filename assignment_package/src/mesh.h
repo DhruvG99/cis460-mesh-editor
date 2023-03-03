@@ -7,15 +7,6 @@
 #include <drawable.h>
 #include <openglcontext.h>
 #include <iostream>
-//struct comp
-//{
-//    template<typename T>
-//    bool operator()(const T &l, const T &r) const
-//    {
-//        return (glm::all(glm::lessThanEqual(l.first,r.first)) &&
-//                glm::all(glm::lessThanEqual(l.second,r.second)));
-//    }
-//};
 
 //hash function creation from here
 //https://stackoverflow.com/questions/32685540/why-cant-i-compile-an-unordered-map-with-a-pair-as-key

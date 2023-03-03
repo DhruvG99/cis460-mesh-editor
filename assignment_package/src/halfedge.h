@@ -30,6 +30,7 @@ public:
     HalfEdge* getSym() const;
     Face* getFace() const;
     Vertex* getVert() const;
+    int getIdx() const;
 };
 
 #endif // HALFEDGE_H

@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 #include <QFileDialog>
-
+#include <unordered_set>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(on_pushButtonSplit()));
     connect(ui->pushButton_3, SIGNAL(clicked(bool)),
             this, SLOT(on_pushButtonTriangulate()));
+    connect(ui->pushButton_4, SIGNAL(clicked(bool)),
+            this, SLOT(on_pushButtonCatmullClark()));
 
     //little difficult to send additional parameters with signals
     //instead using three different slots.
@@ -239,8 +241,7 @@ void MainWindow::on_pushButtonObj()
             std::pair<glm::vec4, glm::vec4> symp = std::make_pair(nextV->pos, prevV->pos);
             if(ui->mygl->m_mesh.edgeBounds.find(symp) != ui->mygl->m_mesh.edgeBounds.end())
                 mapEdge->setSym(ui->mygl->m_mesh.edgeBounds[symp]);
-            else
-                ui->mygl->m_mesh.edgeBounds[p] = mapEdge; //map insertion
+            ui->mygl->m_mesh.edgeBounds[p] = mapEdge; //map insertion
 
             mapEdge = mapEdge->getNext();
         }while(mapEdge != f->getEdge());
@@ -362,6 +363,143 @@ void MainWindow::on_pushButtonTriangulate()
         ui->mygl->m_mesh.create();
         ui->mygl->update();
     }
+}
+
+void MainWindow::smoothHE(HalfEdge* smoothEdge, glm::vec4 smoothPos)
+{
+    HalfEdge* symEdge = smoothEdge->getSym();
+    HalfEdge* currEdge = smoothEdge;
+    do
+    {
+        currEdge = currEdge->getNext();
+
+    }while(currEdge->getNext() != smoothEdge);
+
+    Vertex* prevV = currEdge->getVert();
+    Vertex* nextV = smoothEdge->getVert();
+    glm::vec4 newPos = smoothPos;
+
+    uPtr<Vertex> newV = mkU<Vertex>(newPos);
+    uPtr<HalfEdge> newEdge = mkU<HalfEdge>();
+    uPtr<HalfEdge> newSymEdge = mkU<HalfEdge>();
+
+    //setting next ptr for new edge
+    newEdge->setNext(smoothEdge->getNext());
+    //setting vertex for new edge
+    newEdge->setVert(nextV);
+    //setting face pointer for new edge
+    newEdge->setFace(smoothEdge->getFace());
+    //setting next ptr for old edge
+    smoothEdge->setNext(newEdge.get());
+    //setting new vertex for old edge
+    smoothEdge->setVert(newV.get());
+
+    //same operations as above, but for the symmetric edge
+    newSymEdge->setNext(symEdge->getNext());
+    newSymEdge->setVert(prevV);
+    newSymEdge->setFace(symEdge->getFace());
+    symEdge->setNext(newSymEdge.get());
+    symEdge->setVert(newV.get());
+
+    //setting new symmetric edges
+    smoothEdge->setSym(newSymEdge.get());
+    symEdge->setSym(newEdge.get());
+
+    ui->vertsListWidget->addItem(newV.get());
+    ui->halfEdgesListWidget->addItem(newEdge.get());
+    ui->halfEdgesListWidget->addItem(newSymEdge.get());
+
+    //adding new objects to the mesh
+    ui->mygl->m_mesh.vertexCollection.push_back(std::move(newV));
+    ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newEdge));
+    ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newSymEdge));
+
+    //removing create and update from here
+}
+
+void MainWindow::on_pushButtonCatmullClark()
+{
+    //STEP 2: Centroids
+    std::unordered_map<Face*, glm::vec4> mapCentroid;
+    for(auto& f: ui->mygl->m_mesh.faceCollection)
+    {
+//        uPtr<Vertex> centroidVert = mkU<Vertex>();
+        HalfEdge* faceEdge = f->getEdge();
+        HalfEdge* currEdge = faceEdge;
+        glm::vec4 centroidPos = glm::vec4(0.0f);
+        int numVerts = 0;
+        do
+        {
+            centroidPos += currEdge->getVert()->pos;
+            numVerts++;
+            currEdge = currEdge->getNext();
+        }while(currEdge!=faceEdge);
+        centroidPos /= numVerts;
+//        centroidVert->setPos(centroidPos);
+        //add to map from face->centroid
+        mapCentroid.insert(std::make_pair(f.get(),centroidPos));
+    }
+
+    //STEP 3: Getting the smooth mid points
+    std::unordered_set<HalfEdge*> set_splitHE;
+    int numHE = ui->mygl->m_mesh.halfedgeCollection.size();
+    int numVert = ui->mygl->m_mesh.vertexCollection.size(); // used in step 4
+    //this for loop ensures I don't iterate thru newly added split-edges
+    for(int i = 0; i<numHE; i++)
+    {
+        HalfEdge* e = ui->mygl->m_mesh.halfedgeCollection[i].get();
+        if(set_splitHE.find(e) == set_splitHE.end())
+        {
+            Face* edgeFace = e->getFace();
+            Face* symEdgeFace = e->getSym()->getFace();
+            glm::vec4 centroid1 = mapCentroid[edgeFace]; //use map from edgeFace->centroid
+            glm::vec4 centroid2 = mapCentroid[symEdgeFace]; //use map from symEdgeFace->centroid
+            glm::vec4 vert1 = e->getVert()->pos;
+            glm::vec4 vert2 = e->getSym()->getVert()->pos;
+            glm::vec4 smoothMidPos = 0.25f*(vert1 +
+                                            vert2 +
+                                            centroid1 +
+                                            centroid2);
+            //add indices before splitting
+            //because sym changes after the splitting
+            set_splitHE.insert(e);
+            set_splitHE.insert(e->getSym());
+            //call smooth/split method on half-edge
+            smoothHE(e, smoothMidPos);
+        }
+    }
+
+    //STEP 4: Smooth the original vertices
+    for(int i = 0; i < numVert; i++)
+    {
+        Vertex* vert = ui->mygl->m_mesh.vertexCollection[i].get();
+        glm::vec4 eSum = glm::vec4(0.0f);
+        glm::vec4 fSum = glm::vec4(0.0f);
+        float numAdj = 0.0f;
+        HalfEdge* vertEdge = vert->halfedge->getSym();
+        do
+        {
+            eSum += vertEdge->getVert()->pos;
+            fSum += mapCentroid[vertEdge->getFace()];
+            vertEdge = vertEdge->getSym()->getNext();
+            numAdj++;
+        }while(vertEdge != vert->halfedge->getSym());
+
+        glm::vec4 newPos =
+                (vert->pos*(numAdj-2.0f)/numAdj) +
+                ((eSum+fSum)/(float)pow(numAdj,2));
+        std::cout<<newPos.x<<","<<
+                   newPos.y<<","<<
+                   newPos.z<<std::endl;
+        vert->setPos(newPos);
+    }
+    ui->mygl->m_mesh.create();
+    ui->mygl->update();
+}
+
+void MainWindow::quadFace()
+{
+
 }
 
 void MainWindow::slot_changeVertexPos()

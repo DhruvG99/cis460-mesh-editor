@@ -71,3 +71,8 @@ Vertex* HalfEdge::getVert() const
 {
     return this->vert;
 }
+
+int HalfEdge::getIdx() const
+{
+    return this->idx;
+}
