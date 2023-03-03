@@ -157,12 +157,8 @@ void MainWindow::on_pushButtonObj()
         linestream >> val0;
         if(val0 == "f")
         {
-            glm::vec4 col = {(rand()%256)/255.0f,
-                            (rand()%256)/255.0f,
-                            (rand()%256)/255.0f,
-                            1.0f};
             HalfEdge* prev;
-            uPtr<Face> f = mkU<Face>(col, faceCount);
+            uPtr<Face> f = mkU<Face>(faceCount);
             faceCount++;
             Face* currFace = f.get();
             ui->mygl->m_mesh.faceCollection.push_back(std::move(f));
@@ -299,7 +295,55 @@ void MainWindow::on_pushButtonSplit()
 
 void MainWindow::on_pushButtonTriangulate()
 {
+    if(ui->mygl->isFaceSelected)
+    {
+        Face* selectedFace = ui->mygl->m_face.getFace();
+        HalfEdge* faceEdge = selectedFace->getEdge();
+        Vertex* initV = faceEdge->getVert(); //common vertex to all triangles
 
+        HalfEdge* currEdge = faceEdge->getNext()->getNext();
+        //maybe change to while()
+        while(currEdge->getNext() != faceEdge)
+        {
+            //third vertex of triangle
+            Vertex* v = currEdge->getVert();
+            uPtr<HalfEdge> newEdge = mkU<HalfEdge>();
+            uPtr<HalfEdge> newSymEdge = mkU<HalfEdge>();
+            uPtr<Face> newFace = mkU<Face>();
+
+            HalfEdge* tempEdge = currEdge->getNext();
+            currEdge->setNext(newEdge.get());
+            newEdge->setVert(initV);
+            //only true for first face??
+            newEdge->setNext(faceEdge->getNext());
+            newEdge->setFace(selectedFace);
+            newEdge->setSym(newSymEdge.get());
+            selectedFace->setEdge(newEdge.get());
+
+            faceEdge->setNext(newSymEdge.get());
+            newSymEdge->setNext(tempEdge);
+            newSymEdge->setVert(v);
+            newSymEdge->setFace(newFace.get());
+            newFace->setEdge(newSymEdge.get());
+
+            //for next iteration
+            selectedFace = newFace.get();
+            currEdge = tempEdge;
+
+            //add to list widgets
+            ui->facesListWidget->addItem(newFace.get());
+            ui->halfEdgesListWidget->addItem(newEdge.get());
+            ui->halfEdgesListWidget->addItem(newSymEdge.get());
+            //adding new objects to the mesh
+            ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newEdge));
+            ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newSymEdge));
+            ui->mygl->m_mesh.faceCollection.push_back(std::move(newFace));
+
+        }
+        //end while
+        ui->mygl->m_mesh.create();
+        ui->mygl->update();
+    }
 }
 
 

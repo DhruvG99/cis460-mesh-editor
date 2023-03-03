@@ -99,7 +99,6 @@ void MyGL::paintGL()
         m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());
         m_progFlat.setModelMatrix(glm::mat4(1.f));
         m_progFlat.draw(m_mesh);
-
         glDisable(GL_DEPTH_TEST);
         if(isFaceSelected)
             m_progFlat.draw(m_face);
