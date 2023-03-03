@@ -29,3 +29,8 @@ Vertex::Vertex(glm::vec4 v, HalfEdge* e)
     QListWidgetItem::setText(QString::number(idx));
 }
 
+void Vertex::setPos(glm::vec4 p)
+{
+    this->pos = p;
+}
+

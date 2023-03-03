@@ -24,6 +24,23 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_3, SIGNAL(clicked(bool)),
             this, SLOT(on_pushButtonTriangulate()));
 
+    //little difficult to send additional parameters with signals
+    //instead using three different slots.
+    connect(ui->vertPosXSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(slot_changeVertexPos()));
+    connect(ui->vertPosYSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(slot_changeVertexPos()));
+    connect(ui->vertPosZSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(slot_changeVertexPos()));
+
+
+    connect(ui->faceRedSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(slot_changeFaceCol()));
+    connect(ui->faceGreenSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(slot_changeFaceCol()));
+    connect(ui->faceBlueSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(slot_changeFaceCol()));
+
     connect(ui->vertsListWidget, SIGNAL(itemClicked(QListWidgetItem*)),
                          this, SLOT(slot_selectVert(QListWidgetItem*)));
 
@@ -338,14 +355,46 @@ void MainWindow::on_pushButtonTriangulate()
             ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newEdge));
             ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newSymEdge));
             ui->mygl->m_mesh.faceCollection.push_back(std::move(newFace));
-
         }
         //end while
+        //to update selection
+        ui->mygl->m_face.create();
         ui->mygl->m_mesh.create();
         ui->mygl->update();
     }
 }
 
+void MainWindow::slot_changeVertexPos()
+{
+    if(ui->mygl->isVertSelected)
+    {
+        double x = ui->vertPosXSpinBox->value();
+        double y = ui->vertPosYSpinBox->value();
+        double z = ui->vertPosZSpinBox->value();
+        Vertex* selectedVert = ui->mygl->m_vert.getVertex();
+        selectedVert->setPos(glm::vec4(x,y,z,1.0f));
+        //to update any selections
+        ui->mygl->m_vert.create();
+        ui->mygl->m_edge.create();
+        ui->mygl->m_face.create();
+        ui->mygl->m_mesh.create();
+        ui->mygl->update();
+    }
+}
+
+void MainWindow::slot_changeFaceCol()
+{
+    if(ui->mygl->isFaceSelected)
+    {
+        double r = ui->faceRedSpinBox->value();
+        double g = ui->faceGreenSpinBox->value();
+        double b = ui->faceBlueSpinBox->value();
+        Face* selectedFace = ui->mygl->m_face.getFace();
+        selectedFace->setColor(glm::vec4(r,g,b,0.0f));
+        ui->mygl->m_mesh.create();
+        ui->mygl->update();
+    }
+}
 
 void MainWindow::on_actionQuit_triggered()
 {

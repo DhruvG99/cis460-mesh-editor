@@ -19,6 +19,7 @@ public:
     Vertex();
     Vertex(glm::vec4, int reset = 1);
     Vertex(glm::vec4, HalfEdge*);
+    void setPos(glm::vec4);
 };
 
 

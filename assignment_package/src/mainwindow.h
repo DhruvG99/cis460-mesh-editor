@@ -26,6 +26,9 @@ private slots:
 
     void on_actionQuit_triggered();
 
+    void slot_changeVertexPos();
+    void slot_changeFaceCol();
+
     void slot_selectVert(QListWidgetItem*);
     void slot_selectEdge(QListWidgetItem*);
     void slot_selectFace(QListWidgetItem*);

@@ -18,6 +18,7 @@ public:
     Face(int reset = 1);
     Face(HalfEdge*, glm::vec4);
     void setEdge(HalfEdge*);
+    void setColor(glm::vec4);
     glm::vec4 getColor() const;
     HalfEdge* getEdge() const;
 };

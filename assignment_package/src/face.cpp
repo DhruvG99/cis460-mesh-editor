@@ -30,6 +30,11 @@ void Face::setEdge(HalfEdge* e)
     this->halfedge = e;
 }
 
+void Face::setColor(glm::vec4 c)
+{
+    this->color = c;
+}
+
 glm::vec4 Face::getColor() const
 {
     return this->color;
