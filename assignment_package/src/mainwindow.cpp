@@ -444,6 +444,7 @@ void MainWindow::on_pushButtonCatmullClark()
     std::unordered_set<HalfEdge*> set_splitHE;
     int numHE = ui->mygl->m_mesh.halfedgeCollection.size();
     int numVert = ui->mygl->m_mesh.vertexCollection.size(); // used in step 4
+    int numFace = ui->mygl->m_mesh.faceCollection.size();
     //this for loop ensures I don't iterate thru newly added split-edges
     for(int i = 0; i<numHE; i++)
     {
