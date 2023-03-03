@@ -1,22 +1,22 @@
-#include "camera.h"
+#include "newcamera.h"
 
 #include <la.h>
 #include <iostream>
 
 
-Camera::Camera():
-    Camera(400, 400)
+NewCamera::NewCamera():
+    NewCamera(400, 400)
 {
-    look = glm::vec3(0,0,-1);
+    look = glm::vec3(0,0,1);
     up = glm::vec3(0,1,0);
     right = glm::vec3(1,0,0);
 }
 
-Camera::Camera(unsigned int w, unsigned int h):
-    Camera(w, h, glm::vec3(0,0,10), glm::vec3(0,0,0), glm::vec3(0,1,0))
+NewCamera::NewCamera(unsigned int w, unsigned int h):
+    NewCamera(w, h, glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(0,1,0))
 {}
 
-Camera::Camera(unsigned int w, unsigned int h, const glm::vec3 &e, const glm::vec3 &r, const glm::vec3 &worldUp):
+NewCamera::NewCamera(unsigned int w, unsigned int h, const glm::vec3 &e, const glm::vec3 &r, const glm::vec3 &worldUp):
     fovy(45),
     width(w),
     height(h),
@@ -29,7 +29,7 @@ Camera::Camera(unsigned int w, unsigned int h, const glm::vec3 &e, const glm::ve
     RecomputeAttributes();
 }
 
-Camera::Camera(const Camera &c):
+NewCamera::NewCamera(const NewCamera &c):
     fovy(c.fovy),
     width(c.width),
     height(c.height),
@@ -47,7 +47,7 @@ Camera::Camera(const Camera &c):
 {}
 
 
-void Camera::RecomputeAttributes()
+void NewCamera::RecomputeAttributes()
 {
     look = glm::normalize(ref - eye);
     right = glm::normalize(glm::cross(look, world_up));
@@ -60,12 +60,12 @@ void Camera::RecomputeAttributes()
     H = right*len*aspect*tan_fovy;
 }
 
-glm::mat4 Camera::getViewProj()
+glm::mat4 NewCamera::getViewProj()
 {
     return glm::perspective(glm::radians(fovy), width / (float)height, near_clip, far_clip) * glm::lookAt(eye, ref, up);
 }
 
-void Camera::RotateAboutUp(float deg)
+void NewCamera::RotateAboutUp(float deg)
 {
     glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(deg), up);
     ref = ref - eye;
@@ -73,7 +73,7 @@ void Camera::RotateAboutUp(float deg)
     ref = ref + eye;
     RecomputeAttributes();
 }
-void Camera::RotateAboutRight(float deg)
+void NewCamera::RotateAboutRight(float deg)
 {
     glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(deg), right);
     ref = ref - eye;
@@ -82,46 +82,22 @@ void Camera::RotateAboutRight(float deg)
     RecomputeAttributes();
 }
 
-void Camera::TranslateAlongLook(float amt)
+void NewCamera::TranslateAlongLook(float amt)
 {
     glm::vec3 translation = look * amt;
     eye += translation;
     ref += translation;
 }
 
-void Camera::TranslateAlongRight(float amt)
+void NewCamera::TranslateAlongRight(float amt)
 {
     glm::vec3 translation = right * amt;
     eye += translation;
     ref += translation;
 }
-void Camera::TranslateAlongUp(float amt)
+void NewCamera::TranslateAlongUp(float amt)
 {
     glm::vec3 translation = up * amt;
     eye += translation;
     ref += translation;
-}
-
-void Camera::RotateTheta(float deg)
-{
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), deg, right);
-    eye = eye - ref;
-    eye = glm::vec3(rotation * glm::vec4(eye, 1.f));
-    eye = eye + ref;
-    RecomputeAttributes();
-}
-
-void Camera::RotatePhi(float deg)
-{
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), deg, up);
-    eye = eye - ref;
-    eye = glm::vec3(rotation * glm::vec4(eye, 1.f));
-    eye = eye + ref;
-    RecomputeAttributes();
-}
-
-void Camera::Zoom(float amt)
-{
-    glm::vec3 translation = look * amt;
-    eye += translation;
 }

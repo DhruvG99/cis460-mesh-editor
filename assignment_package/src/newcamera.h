@@ -4,13 +4,13 @@
 
 //A perspective projection camera
 //Receives its eye position and reference point from the scene XML file
-class Camera
+class NewCamera
 {
 public:
-    Camera();
-    Camera(unsigned int w, unsigned int h);
-    Camera(unsigned int w, unsigned int h, const glm::vec3 &e, const glm::vec3 &r, const glm::vec3 &worldUp);
-    Camera(const Camera &c);
+    NewCamera();
+    NewCamera(unsigned int w, unsigned int h);
+    NewCamera(unsigned int w, unsigned int h, const glm::vec3 &e, const glm::vec3 &r, const glm::vec3 &worldUp);
+    NewCamera(const NewCamera &c);
 
     float fovy;
     unsigned int width, height;  // Screen dimensions
@@ -39,8 +39,4 @@ public:
     void TranslateAlongLook(float amt);
     void TranslateAlongRight(float amt);
     void TranslateAlongUp(float amt);
-
-    void RotateTheta(float deg);
-    void RotatePhi(float deg);
-    void Zoom(float amt);
 };

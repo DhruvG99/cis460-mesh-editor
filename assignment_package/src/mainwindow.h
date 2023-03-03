@@ -21,6 +21,8 @@ private slots:
     void resetLists();
 
     void on_pushButtonObj();
+    void on_pushButtonSplit();
+    void on_pushButtonTriangulate();
 
     void on_actionQuit_triggered();
 
@@ -28,7 +30,11 @@ private slots:
     void slot_selectEdge(QListWidgetItem*);
     void slot_selectFace(QListWidgetItem*);
 
+
+
     void on_actionCamera_Controls_triggered();
+
+
 
 private:
     Ui::MainWindow *ui;

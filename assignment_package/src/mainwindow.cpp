@@ -19,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->pushButton, SIGNAL(clicked(bool)),
             this, SLOT(on_pushButtonObj()));
+    connect(ui->pushButton_2, SIGNAL(clicked(bool)),
+            this, SLOT(on_pushButtonSplit()));
+    connect(ui->pushButton_3, SIGNAL(clicked(bool)),
+            this, SLOT(on_pushButtonTriangulate()));
 
     connect(ui->vertsListWidget, SIGNAL(itemClicked(QListWidgetItem*)),
                          this, SLOT(slot_selectVert(QListWidgetItem*)));
@@ -236,6 +240,69 @@ void MainWindow::on_pushButtonObj()
     ui->mygl->update();
 }
 
+void MainWindow::on_pushButtonSplit()
+{
+    if(ui->mygl->isEdgeSelected)
+    {
+        HalfEdge* selectedEdge = ui->mygl->m_edge.getEdge();
+        HalfEdge* symEdge = selectedEdge->getSym();
+        HalfEdge* currEdge = selectedEdge;
+        do
+        {
+            currEdge = currEdge->getNext();
+
+        }while(currEdge->getNext() != selectedEdge);
+
+        Vertex* prevV = currEdge->getVert();
+        Vertex* nextV = selectedEdge->getVert();
+        glm::vec4 newPos = 0.5f*(prevV->pos + nextV->pos);
+
+        uPtr<Vertex> newV = mkU<Vertex>(newPos);
+        uPtr<HalfEdge> newEdge = mkU<HalfEdge>();
+        uPtr<HalfEdge> newSymEdge = mkU<HalfEdge>();
+
+        //setting next ptr for new edge
+        newEdge->setNext(selectedEdge->getNext());
+        //setting vertex for new edge
+        newEdge->setVert(nextV);
+        //setting face pointer for new edge
+        newEdge->setFace(selectedEdge->getFace());
+        //setting next ptr for old edge
+        selectedEdge->setNext(newEdge.get());
+        //setting new vertex for old edge
+        selectedEdge->setVert(newV.get());
+
+        //same operations as above, but for the symmetric edge
+        newSymEdge->setNext(symEdge->getNext());
+        newSymEdge->setVert(prevV);
+        newSymEdge->setFace(symEdge->getFace());
+        symEdge->setNext(newSymEdge.get());
+        symEdge->setVert(newV.get());
+
+        //setting new symmetric edges
+        selectedEdge->setSym(newSymEdge.get());
+        symEdge->setSym(newEdge.get());
+
+        ui->vertsListWidget->addItem(newV.get());
+        ui->halfEdgesListWidget->addItem(newEdge.get());
+        ui->halfEdgesListWidget->addItem(newSymEdge.get());
+
+        //adding new objects to the mesh
+        ui->mygl->m_mesh.vertexCollection.push_back(std::move(newV));
+        ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newEdge));
+        ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newSymEdge));
+
+        ui->mygl->m_mesh.create();
+        ui->mygl->update();
+    }
+}
+
+void MainWindow::on_pushButtonTriangulate()
+{
+
+}
+
+
 void MainWindow::on_actionQuit_triggered()
 {
     QApplication::exit();
@@ -246,3 +313,5 @@ void MainWindow::on_actionCamera_Controls_triggered()
     CameraControlsHelp* c = new CameraControlsHelp();
     c->show();
 }
+
+

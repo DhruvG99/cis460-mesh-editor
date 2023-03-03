@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/mainwindow.cpp \
     $$PWD/mesh.cpp \
     $$PWD/mygl.cpp \
+    $$PWD/newcamera.cpp \
     $$PWD/shaderprogram.cpp \
     $$PWD/utils.cpp \
     $$PWD/la.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     $$PWD/mainwindow.h \
     $$PWD/mesh.h \
     $$PWD/mygl.h \
+    $$PWD/newcamera.h \
     $$PWD/shaderprogram.h \
     $$PWD/utils.h \
     $$PWD/drawable.h \
