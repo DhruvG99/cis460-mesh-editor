@@ -93,7 +93,7 @@ void MyGL::paintGL()
 {
     if(isMeshCreated)
     {
-        glClearColor(0.5,0.5,0.5,1);
+        glClearColor(0.8,0.7,0.6,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         m_progFlat.setViewProjMatrix(m_glCamera.getViewProj());

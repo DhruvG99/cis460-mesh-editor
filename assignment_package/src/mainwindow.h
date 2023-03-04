@@ -20,7 +20,6 @@ private slots:
     void addToListWidgets();
     void resetLists();
     void smoothHE(HalfEdge*, glm::vec4);
-    void quadFace(); //quadrangulate the face
 
     void on_pushButtonObj();
     void on_pushButtonSplit();

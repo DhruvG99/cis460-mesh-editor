@@ -408,12 +408,10 @@ void MainWindow::smoothHE(HalfEdge* smoothEdge, glm::vec4 smoothPos)
     ui->vertsListWidget->addItem(newV.get());
     ui->halfEdgesListWidget->addItem(newEdge.get());
     ui->halfEdgesListWidget->addItem(newSymEdge.get());
-
     //adding new objects to the mesh
     ui->mygl->m_mesh.vertexCollection.push_back(std::move(newV));
     ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newEdge));
     ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(newSymEdge));
-
     //removing create and update from here
 }
 
@@ -423,7 +421,6 @@ void MainWindow::on_pushButtonCatmullClark()
     std::unordered_map<Face*, glm::vec4> mapCentroid;
     for(auto& f: ui->mygl->m_mesh.faceCollection)
     {
-//        uPtr<Vertex> centroidVert = mkU<Vertex>();
         HalfEdge* faceEdge = f->getEdge();
         HalfEdge* currEdge = faceEdge;
         glm::vec4 centroidPos = glm::vec4(0.0f);
@@ -433,9 +430,8 @@ void MainWindow::on_pushButtonCatmullClark()
             centroidPos += currEdge->getVert()->pos;
             numVerts++;
             currEdge = currEdge->getNext();
-        }while(currEdge!=faceEdge);
+        } while(currEdge!=faceEdge);
         centroidPos /= numVerts;
-//        centroidVert->setPos(centroidPos);
         //add to map from face->centroid
         mapCentroid.insert(std::make_pair(f.get(),centroidPos));
     }
@@ -489,18 +485,77 @@ void MainWindow::on_pushButtonCatmullClark()
         glm::vec4 newPos =
                 (vert->pos*(numAdj-2.0f)/numAdj) +
                 ((eSum+fSum)/(float)pow(numAdj,2));
-        std::cout<<newPos.x<<","<<
-                   newPos.y<<","<<
-                   newPos.z<<std::endl;
         vert->setPos(newPos);
+    }
+
+    //STEP 5: QUADRANGULATIONNNNNN DUN DUN DUN
+    //using a for loop to avoid repeat quading
+    for(int i = 0; i< numFace; i++)
+    {
+        Face* f = ui->mygl->m_mesh.faceCollection[i].get();
+        glm::vec4 centroidPos = mapCentroid[f];
+        uPtr<Vertex> centroidVert = mkU<Vertex>(centroidPos);
+        HalfEdge* faceEdge = f->getEdge();
+        HalfEdge* currEdge = faceEdge;
+        //starting at the last half of the edge
+        HalfEdge* firstEdge = currEdge->getNext();
+        HalfEdge* prevEdgeToVert = nullptr;
+        HalfEdge* firstEdgeToVert = nullptr;
+        do
+        {
+            uPtr<HalfEdge> edgeToVert = mkU<HalfEdge>();
+            uPtr<HalfEdge> edgeFromVert = mkU<HalfEdge>();
+            //new edge to centroid
+            edgeToVert->setNext(edgeFromVert.get());
+            edgeToVert->setVert(centroidVert.get());
+
+            //new edge from centroid to different midpoint
+            edgeFromVert->setVert(currEdge->getVert());
+            edgeFromVert->setNext(firstEdge);
+
+            //only create a new face if it's not the first quading
+            if(prevEdgeToVert!=nullptr)
+            {
+                uPtr<Face> facePtr = mkU<Face>();
+                //setting sym from previous face
+                edgeFromVert->setSym(prevEdgeToVert);
+                //set face pointers for all edges
+                edgeToVert->setFace(facePtr.get());
+                facePtr->setEdge(edgeToVert.get());
+                edgeFromVert->setFace(facePtr.get());
+                firstEdge->setFace(facePtr.get());
+                firstEdge->getNext()->setFace(facePtr.get());
+                ui->facesListWidget->addItem(facePtr.get());
+                ui->mygl->m_mesh.faceCollection.push_back(std::move(facePtr));
+            } else {
+                firstEdgeToVert = edgeFromVert.get();
+                //set face pointers for all edges
+                edgeToVert->setFace(f);
+                f->setEdge(edgeToVert.get());
+                edgeFromVert->setFace(f);
+                firstEdge->setFace(f);
+                firstEdge->getNext()->setFace(f);
+            }
+
+            prevEdgeToVert = edgeToVert.get();
+            currEdge = firstEdge->getNext();
+            firstEdge = currEdge->getNext();
+            //modifying next at the end
+            currEdge->setNext(edgeToVert.get());
+
+            //add to collections
+            ui->halfEdgesListWidget->addItem(edgeToVert.get());
+            ui->halfEdgesListWidget->addItem(edgeFromVert.get());
+            ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(edgeToVert));
+            ui->mygl->m_mesh.halfedgeCollection.push_back(std::move(edgeFromVert));
+        } while(currEdge != faceEdge);
+        //setting last sym
+        prevEdgeToVert->setSym(firstEdgeToVert);
+        ui->vertsListWidget->addItem(centroidVert.get());
+        ui->mygl->m_mesh.vertexCollection.push_back(std::move(centroidVert));
     }
     ui->mygl->m_mesh.create();
     ui->mygl->update();
-}
-
-void MainWindow::quadFace()
-{
-
 }
 
 void MainWindow::slot_changeVertexPos()
@@ -514,8 +569,10 @@ void MainWindow::slot_changeVertexPos()
         selectedVert->setPos(glm::vec4(x,y,z,1.0f));
         //to update any selections
         ui->mygl->m_vert.create();
-        ui->mygl->m_edge.create();
-        ui->mygl->m_face.create();
+        if(ui->mygl->isEdgeSelected)
+            ui->mygl->m_edge.create();
+        if(ui->mygl->isFaceSelected)
+            ui->mygl->m_face.create();
         ui->mygl->m_mesh.create();
         ui->mygl->update();
     }

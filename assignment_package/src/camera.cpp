@@ -43,7 +43,9 @@ Camera::Camera(const Camera &c):
     right(c.right),
     world_up(c.world_up),
     V(c.V),
-    H(c.H)
+    H(c.H),
+    theta(c.theta),
+    phi(c.phi)
 {}
 
 
@@ -62,6 +64,24 @@ void Camera::RecomputeAttributes()
 
 glm::mat4 Camera::getViewProj()
 {
+    glm::mat4 rottheta = glm::rotate(glm::mat4(1.0f), theta, world_up);
+    glm::mat4 rotphi = glm::rotate(glm::mat4(1.0f), phi, look);
+    glm::vec3 translation = look * zoom;
+
+    eye += translation;
+    look += translation;
+    right += translation;
+    up += translation;
+
+    eye = glm::vec3(rotphi*glm::vec4(eye,1));
+    look = glm::vec3(rotphi*glm::vec4(look,1));
+    right = glm::vec3(rotphi*glm::vec4(right,1));
+    up = glm::vec3(rotphi*glm::vec4(up,1));
+
+    eye = glm::vec3(rottheta*glm::vec4(eye,1));
+    look = glm::vec3(rottheta*glm::vec4(look,1));
+    right = glm::vec3(rottheta*glm::vec4(right,1));
+    up = glm::vec3(rottheta*glm::vec4(up,1));
     return glm::perspective(glm::radians(fovy), width / (float)height, near_clip, far_clip) * glm::lookAt(eye, ref, up);
 }
 
@@ -104,7 +124,8 @@ void Camera::TranslateAlongUp(float amt)
 
 void Camera::RotateTheta(float deg)
 {
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), deg, right);
+    theta += deg;
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), deg, up);
     eye = eye - ref;
     eye = glm::vec3(rotation * glm::vec4(eye, 1.f));
     eye = eye + ref;
@@ -113,7 +134,8 @@ void Camera::RotateTheta(float deg)
 
 void Camera::RotatePhi(float deg)
 {
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), deg, up);
+    phi += deg;
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), deg, right);
     eye = eye - ref;
     eye = glm::vec3(rotation * glm::vec4(eye, 1.f));
     eye = eye + ref;
@@ -122,6 +144,7 @@ void Camera::RotatePhi(float deg)
 
 void Camera::Zoom(float amt)
 {
+    zoom +=amt;
     glm::vec3 translation = look * amt;
     eye += translation;
 }
