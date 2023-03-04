@@ -33,3 +33,7 @@ https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defi
 https://www.techiedelight.com/use-std-pair-key-std-map-cpp/
 
 https://stackoverflow.com/questions/3065154/undefined-reference-to-vtable
+
+https://stackoverflow.com/questions/15810620/unordered-map-with-custom-hashing-equal-functions-functions-dont-get-called
+
+https://stackoverflow.com/questions/15311241/qlistwidget-event-on-item-click
