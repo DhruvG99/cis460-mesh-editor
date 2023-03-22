@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 #include <QFileDialog>
+#include <QJsonDocument>
+#include <QJsonArray>
 #include <unordered_set>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -25,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(on_pushButtonTriangulate()));
     connect(ui->pushButton_4, SIGNAL(clicked(bool)),
             this, SLOT(on_pushButtonCatmullClark()));
+    connect(ui->pushButton_5, SIGNAL(clicked(bool)),
+            this, SLOT(on_pushButtonJson()));
+    connect(ui->pushButton_6, SIGNAL(clicked(bool)),
+            this, SLOT(on_pushButtonSkinMesh()));
 
     //little difficult to send additional parameters with signals
     //instead using three different slots.
@@ -108,6 +114,16 @@ void MainWindow::addToListWidgets()
     for(auto& face: ui->mygl->m_mesh.faceCollection)
     {
         ui->facesListWidget->addItem(face.get());
+    }
+}
+
+void MainWindow::addToJointTree(Joint* node)
+{
+    for(auto& child: node->children)
+    {
+        node->addChild(child.get());
+        child->setText(0,child->name);
+        addToJointTree(child.get());
     }
 }
 
@@ -252,6 +268,66 @@ void MainWindow::on_pushButtonObj()
     ui->mygl->m_mesh.create();
     ui->mygl->isMeshCreated = true;
     ui->mygl->update();
+}
+
+void MainWindow::buildSkeleton(Joint* parent, QJsonObject obj)
+{
+    QString nodeName = obj["name"].toString();
+    QJsonArray nodePos = obj["pos"].toArray();
+    QJsonArray nodeRot = obj["rot"].toArray();
+    QJsonArray nodeChildren = obj["children"].toArray();
+    glm::vec3 pos (nodePos[0].toDouble(), nodePos[1].toDouble(), nodePos[2].toDouble());
+    glm::vec4 rot (nodeRot[0].toDouble(), nodeRot[1].toDouble(), nodeRot[2].toDouble(), nodeRot[3].toDouble());
+    //set to nullptr for root node
+    uPtr<Joint> node = mkU<Joint>(nodeName, pos, rot, parent);
+    //recursively add children
+    for(int i = 0; i<nodeChildren.size(); i++)
+        buildSkeleton(node.get(), nodeChildren[i].toObject());
+    if(parent!=nullptr)
+        parent->children.push_back(std::move(node));
+    else
+        ui->mygl->m_skeleton.root = std::move(node);
+}
+
+void MainWindow::testSkeleton(Joint* node)
+{
+    for(auto& child: node->children)
+    {
+        Joint* childPtr = child.get();
+        std::cout << childPtr->name.toStdString() << std::endl;
+        testSkeleton(childPtr);
+    }
+}
+
+void MainWindow::on_pushButtonJson()
+{
+    QString filename = QFileDialog::getOpenFileName(0, QString("Load JSON"),
+                                                    QDir::currentPath().append(QString("../..")),
+                                                    QString("*.json"));
+    QFile file = QFile(filename);
+    if(!file.open(QIODevice::ReadOnly)){
+            qWarning("Could not open the JSON file.");
+            return;
+    }
+    QJsonDocument myjson(QJsonDocument::fromJson(file.readAll()));
+    QJsonObject rootNode = myjson.object()["root"].toObject();
+    buildSkeleton(nullptr, rootNode);
+    Joint* root = ui->mygl->m_skeleton.root.get();
+    ui->jointTree->addTopLevelItem(root);
+    root->setText(0,root->name);
+    for(auto& child: root->children)
+    {
+        root->addChild(child.get());
+        child->setText(0,child->name);
+        addToJointTree(child.get());
+    }
+    ui->mygl->m_skeleton.create();
+    ui->mygl->isSkeletonCreated = true;
+    ui->mygl->update();
+    /*
+     * To test the skeleton:
+     * testSkeleton(ui->mygl->m_skeleton.root.get());
+     */
 }
 
 void MainWindow::on_pushButtonSplit()
@@ -557,6 +633,40 @@ void MainWindow::on_pushButtonCatmullClark()
     ui->mygl->m_mesh.create();
     ui->mygl->update();
 }
+
+//void MainWindow::jointInfluence(Joint* node)
+//{
+//    for(auto& vert: ui->mygl->m_mesh.vertexCollection)
+//    {
+//        vert->pos()
+//    }
+//    for(auto& child: node->children)
+//    {
+//        Joint* childPtr = child.get();
+
+//        jointInfluence(childPtr);
+//    }
+//}
+
+void MainWindow::on_pushButtonSkinMesh()
+{
+//    Joint* root = ui->mygl->m_skeleton.root.get();
+//    for(auto& node: root->children)
+//    {
+
+//    }
+    //for every joint in tree
+    //calculate distance of all vertices from joint 1
+    //assign distance as weight and jointID as influence
+    //next iteration:
+    //calculate distance of all vertices from joint 2
+    //assign distance as weight and jointID as influence
+    //next iteration:
+    //calculate distance of all vertices from joint n
+    //Pick minimum of (influence 1, influence 2, joint n)
+    //assign distance_n as weight1/2 and joint_n as influence1/2
+}
+
 
 void MainWindow::slot_changeVertexPos()
 {

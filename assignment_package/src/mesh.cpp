@@ -50,7 +50,8 @@ void Mesh::create()
             numVert++;
             glm::vec4 p = curr->getVert()->pos;
             pos.push_back(p);
-            col.push_back(f->getColor());
+            //decreasing brightness of colors to see joints better
+            col.push_back(0.5f*(f->getColor()));
             curr = curr->getNext();
         }while(curr != f->getEdge());
 

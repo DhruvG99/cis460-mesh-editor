@@ -64,24 +64,24 @@ void Camera::RecomputeAttributes()
 
 glm::mat4 Camera::getViewProj()
 {
-    glm::mat4 rottheta = glm::rotate(glm::mat4(1.0f), theta, world_up);
-    glm::mat4 rotphi = glm::rotate(glm::mat4(1.0f), phi, look);
-    glm::vec3 translation = look * zoom;
+//    glm::mat4 rottheta = glm::rotate(glm::mat4(1.0f), theta, world_up);
+//    glm::mat4 rotphi = glm::rotate(glm::mat4(1.0f), phi, look);
+//    glm::vec3 translation = look * zoom;
 
-    eye += translation;
-    look += translation;
-    right += translation;
-    up += translation;
+//    eye += translation;
+//    look += translation;
+//    right += translation;
+//    up += translation;
 
-    eye = glm::vec3(rotphi*glm::vec4(eye,1));
-    look = glm::vec3(rotphi*glm::vec4(look,1));
-    right = glm::vec3(rotphi*glm::vec4(right,1));
-    up = glm::vec3(rotphi*glm::vec4(up,1));
+//    eye = glm::vec3(rotphi*glm::vec4(eye,1));
+//    look = glm::vec3(rotphi*glm::vec4(look,1));
+//    right = glm::vec3(rotphi*glm::vec4(right,1));
+//    up = glm::vec3(rotphi*glm::vec4(up,1));
 
-    eye = glm::vec3(rottheta*glm::vec4(eye,1));
-    look = glm::vec3(rottheta*glm::vec4(look,1));
-    right = glm::vec3(rottheta*glm::vec4(right,1));
-    up = glm::vec3(rottheta*glm::vec4(up,1));
+//    eye = glm::vec3(rottheta*glm::vec4(eye,1));
+//    look = glm::vec3(rottheta*glm::vec4(look,1));
+//    right = glm::vec3(rottheta*glm::vec4(right,1));
+//    up = glm::vec3(rottheta*glm::vec4(up,1));
     return glm::perspective(glm::radians(fovy), width / (float)height, near_clip, far_clip) * glm::lookAt(eye, ref, up);
 }
 

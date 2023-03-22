@@ -10,7 +10,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
 #include <mesh.h>
-
+#include <skeleton.h>
 #include <vertexdisplay.h>
 #include <halfedgedisplay.h>
 #include <facedisplay.h>
@@ -35,10 +35,12 @@ public:
     void resizeGL(int w, int h);
     void paintGL();
 
+    bool isSkeletonCreated;
     bool isMeshCreated;
     bool isVertSelected;
     bool isEdgeSelected;
     bool isFaceSelected;
+    Skeleton m_skeleton;
     Mesh m_mesh;
     VertexDisplay m_vert;
     HalfEdgeDisplay m_edge;

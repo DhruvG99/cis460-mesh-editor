@@ -10,10 +10,12 @@ MyGL::MyGL(QWidget *parent)
       m_geomSquare(this),
       m_progLambert(this), m_progFlat(this),
       m_glCamera(),
+      isSkeletonCreated(false),
       isMeshCreated(false),
       isVertSelected(false),
       isEdgeSelected(false),
       isFaceSelected(false),
+      m_skeleton(this),
       m_mesh(this),
       m_vert(this),
       m_edge(this),
@@ -27,6 +29,7 @@ MyGL::~MyGL()
     makeCurrent();
     glDeleteVertexArrays(1, &vao);
     m_geomSquare.destroy();
+    m_skeleton.destroy(),
     m_mesh.destroy();
     m_vert.destroy();
     m_edge.destroy();
@@ -106,6 +109,8 @@ void MyGL::paintGL()
             m_progFlat.draw(m_edge);
         if(isVertSelected)
             m_progFlat.draw(m_vert);
+        if(isSkeletonCreated)
+            m_progFlat.draw(m_skeleton);
         glEnable(GL_DEPTH_TEST);
     }
     else

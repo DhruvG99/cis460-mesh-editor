@@ -1,8 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <mesh.h>
+#include <joint.h>
 #include <QMainWindow>
-
+#include <QJsonObject>
 
 namespace Ui {
 class MainWindow;
@@ -18,13 +19,18 @@ public:
 
 private slots:
     void addToListWidgets();
+    void addToJointTree(Joint*);
     void resetLists();
     void smoothHE(HalfEdge*, glm::vec4);
+    void buildSkeleton(Joint*, QJsonObject);
+    void testSkeleton(Joint*);
 
     void on_pushButtonObj();
+    void on_pushButtonJson();
     void on_pushButtonSplit();
     void on_pushButtonTriangulate();
     void on_pushButtonCatmullClark();
+    void on_pushButtonSkinMesh();
 
     void on_actionQuit_triggered();
 
